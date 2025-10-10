@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Starcore.ViewModels"
+             xmlns:views="clr-namespace:Starcore.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Starcore.Views.SidebarView"
+             x:DataType="vm:SidebarViewModel">
+    
+    <ThemeVariantScope RequestedThemeVariant="Light">
+        <Panel Background="{DynamicResource BackgroundBrush}">
+            <ScrollViewer>
+                <StackPanel Margin="20">
+                    <Panel Margin="0 0 0 20">
+                        <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">Starcore</TextBlock>
+                        <Button Classes="accent" HorizontalAlignment="Right">Open</Button>
+                    </Panel>
+            
+                    <Grid RowDefinitions="Auto, *">
+                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0 0 10">
+                            <Expander.Header>Systems</Expander.Header>
+                            <StackPanel>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
+                            </StackPanel>
+                        </Expander>
+                    </Grid>
+                    <Grid RowDefinitions="Auto, *">
+                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                            <Expander.Header>Protocols</Expander.Header>
+                            <StackPanel>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
+                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
+                            </StackPanel>
+                        </Expander>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Panel>
+    </ThemeVariantScope>
+</UserControl>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Starcore/App.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+        <entry key="Starcore/Views/ContentView.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+        <entry key="Starcore/Views/MainView.axaml" value="Starcore.Desktop/Starcore.Desktop.csproj" />
+        <entry key="Starcore/Views/MainWindow.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+        <entry key="Starcore/Views/Sidebar.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+        <entry key="Starcore/Views/SidebarView.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

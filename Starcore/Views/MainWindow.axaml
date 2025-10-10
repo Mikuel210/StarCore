@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Starcore.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Starcore.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Starcore.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Starcore">
+        
+        <Window.Resources>
+                <ResourceDictionary>
+                        <ResourceDictionary.ThemeDictionaries>
+                                <ResourceDictionary x:Key="Light">
+                                        <SolidColorBrush x:Key="BackgroundBrush">White</SolidColorBrush>
+                                        <SolidColorBrush x:Key="ForegroundBrush">Black</SolidColorBrush>
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="Dark">
+                                        <SolidColorBrush x:Key="BackgroundBrush">#1a1a1a</SolidColorBrush>
+                                        <SolidColorBrush x:Key="ForegroundBrush">White</SolidColorBrush>
+                                </ResourceDictionary>
+                        </ResourceDictionary.ThemeDictionaries>
+                </ResourceDictionary>
+        </Window.Resources>
+        
+        <views:MainView/>
+        
+</Window>
