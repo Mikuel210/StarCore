@@ -3,20 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Starcore", "Starcore\Starcore.csproj", "{EBFA8512-1EA5-4D8C-B4AC-AB5B48A6D568}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarCore", "StarCore\StarCore.csproj", "{EBFA8512-1EA5-4D8C-B4AC-AB5B48A6D568}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Starcore.Desktop", "Starcore.Desktop\Starcore.Desktop.csproj", "{ABC31E74-02FF-46EB-B3B2-4E6AE43B456C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarCore.Desktop", "StarCore.Desktop\StarCore.Desktop.csproj", "{ABC31E74-02FF-46EB-B3B2-4E6AE43B456C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Starcore.Browser", "Starcore.Browser\Starcore.Browser.csproj", "{1C1A049E-235C-4CD0-B6FA-D53AC418F4DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarCore.Browser", "StarCore.Browser\StarCore.Browser.csproj", "{1C1A049E-235C-4CD0-B6FA-D53AC418F4DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Starcore.iOS", "Starcore.iOS\Starcore.iOS.csproj", "{EBD9022F-BC83-4846-9A11-6F7F3772DC64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarCore.iOS", "StarCore.iOS\StarCore.iOS.csproj", "{EBD9022F-BC83-4846-9A11-6F7F3772DC64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Starcore.Android", "Starcore.Android\Starcore.Android.csproj", "{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarCore.Android", "StarCore.Android\StarCore.Android.csproj", "{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DA99C4E-89E3-4049-9C22-0A7EC60D83D8}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDK", "SDK\SDK.csproj", "{4E4AFE0F-0F02-44DB-9112-1B9C88D4B1F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{1624F22E-C91C-48F1-B8CE-FDE6F4E7E6C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules", "Modules\Modules.csproj", "{242722D2-E15B-41FD-8D7A-0CCBF630C233}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +50,18 @@ Global
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4AFE0F-0F02-44DB-9112-1B9C88D4B1F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4AFE0F-0F02-44DB-9112-1B9C88D4B1F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4AFE0F-0F02-44DB-9112-1B9C88D4B1F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4AFE0F-0F02-44DB-9112-1B9C88D4B1F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1624F22E-C91C-48F1-B8CE-FDE6F4E7E6C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1624F22E-C91C-48F1-B8CE-FDE6F4E7E6C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1624F22E-C91C-48F1-B8CE-FDE6F4E7E6C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1624F22E-C91C-48F1-B8CE-FDE6F4E7E6C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242722D2-E15B-41FD-8D7A-0CCBF630C233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242722D2-E15B-41FD-8D7A-0CCBF630C233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242722D2-E15B-41FD-8D7A-0CCBF630C233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242722D2-E15B-41FD-8D7A-0CCBF630C233}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

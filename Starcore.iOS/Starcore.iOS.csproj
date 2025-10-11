@@ -11,6 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Starcore\Starcore.csproj"/>
+        <ProjectReference Include="..\StarCore\StarCore.csproj"/>
     </ItemGroup>
 </Project>

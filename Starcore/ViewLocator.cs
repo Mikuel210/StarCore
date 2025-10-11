@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Starcore.ViewModels;
+using StarCore.ViewModels;
 
-namespace Starcore;
+namespace StarCore;
 
 public class ViewLocator : IDataTemplate
 {

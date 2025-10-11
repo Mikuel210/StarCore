@@ -3,10 +3,10 @@ using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
 
-namespace Starcore.Android;
+namespace StarCore.Android;
 
 [Activity(
-	Label = "Starcore.Android",
+	Label = "StarCore.Android",
 	Theme = "@style/MyTheme.NoActionBar",
 	Icon = "@drawable/icon",
 	MainLauncher = true,

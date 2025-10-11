@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Starcore.Views;
+namespace StarCore.Views;
 
 public partial class MainWindow : Window
 {

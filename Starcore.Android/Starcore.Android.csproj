@@ -4,7 +4,7 @@
         <TargetFramework>net9.0-android</TargetFramework>
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
-        <ApplicationId>com.CompanyName.Starcore</ApplicationId>
+        <ApplicationId>com.CompanyName.StarCore</ApplicationId>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
@@ -23,6 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Starcore\Starcore.csproj"/>
+        <ProjectReference Include="..\StarCore\StarCore.csproj"/>
     </ItemGroup>
 </Project>

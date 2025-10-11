@@ -2,10 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Starcore.ViewModels"
-             xmlns:views="clr-namespace:Starcore.Views"
+             xmlns:vm="clr-namespace:StarCore.ViewModels"
+             xmlns:views="clr-namespace:StarCore.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Starcore.Views.SidebarView"
+             x:Class="StarCore.Views.SidebarView"
              x:DataType="vm:SidebarViewModel">
     
     <ThemeVariantScope RequestedThemeVariant="Light">
@@ -13,7 +13,7 @@
             <ScrollViewer>
                 <StackPanel Margin="20">
                     <Panel Margin="0 0 0 20">
-                        <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">Starcore</TextBlock>
+                        <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">StarCore</TextBlock>
                         <Button Classes="accent" HorizontalAlignment="Right">Open</Button>
                     </Panel>
             

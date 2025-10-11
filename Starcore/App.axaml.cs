@@ -4,10 +4,10 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using Starcore.ViewModels;
-using Starcore.Views;
+using StarCore.ViewModels;
+using StarCore.Views;
 
-namespace Starcore;
+namespace StarCore;
 
 public partial class App : Application
 {

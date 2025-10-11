@@ -3,12 +3,16 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
-        <entry key="Starcore/App.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
-        <entry key="Starcore/Views/ContentView.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
-        <entry key="Starcore/Views/MainView.axaml" value="Starcore.Desktop/Starcore.Desktop.csproj" />
+        <entry key="StarCore/App.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="StarCore/Views/ContentView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="StarCore/Views/MainView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="StarCore/Views/SidebarView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="Starcore/App.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="Starcore/Views/ContentView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="Starcore/Views/MainView.axaml" value="StarCore.Desktop/StarCore.Desktop.csproj" />
         <entry key="Starcore/Views/MainWindow.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
         <entry key="Starcore/Views/Sidebar.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
-        <entry key="Starcore/Views/SidebarView.axaml" value="Starcore.Browser/Starcore.Browser.csproj" />
+        <entry key="Starcore/Views/SidebarView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
       </map>
     </option>
   </component>

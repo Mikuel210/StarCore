@@ -1,6 +1,6 @@
 {
     "profiles": {
-    "Starcore.Browser": {
+    "StarCore.Browser": {
         "commandName": "Project",
         "launchBrowser": true,
         "environmentVariables": {

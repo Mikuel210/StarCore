@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Starcore</string>
+	<string>StarCore</string>
 	<key>CFBundleIdentifier</key>
-	<string>companyName.Starcore</string>
+	<string>companyName.StarCore</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>

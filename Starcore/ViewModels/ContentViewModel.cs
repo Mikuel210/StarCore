@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Starcore.ViewModels;
+namespace StarCore.ViewModels;
 
 public partial class ContentViewModel : ViewModelBase;

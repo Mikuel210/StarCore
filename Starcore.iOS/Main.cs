@@ -1,6 +1,6 @@
 using UIKit;
 
-namespace Starcore.iOS;
+namespace StarCore.iOS;
 
 public class Application
 {

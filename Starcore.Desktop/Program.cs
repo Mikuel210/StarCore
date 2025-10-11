@@ -1,7 +1,7 @@
 ﻿using System;
 using Avalonia;
 
-namespace Starcore.Desktop;
+namespace StarCore.Desktop;
 
 sealed class Program
 {
