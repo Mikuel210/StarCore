@@ -2,6 +2,8 @@
 
 namespace Modules;
 
+[ModuleName("Test System")]
+[ModuleDescription("A system for testing stuff")]
 public class TestSystem : SystemInstance
 {
 
