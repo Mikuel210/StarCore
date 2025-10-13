@@ -8,39 +8,41 @@
              x:Class="StarCore.Views.SidebarView"
              x:DataType="vm:SidebarViewModel">
     
-    <ThemeVariantScope RequestedThemeVariant="Light">
-        <Panel Background="{DynamicResource BackgroundBrush}">
-            <ScrollViewer>
-                <StackPanel Margin="20">
-                    <Panel Margin="0 0 0 20">
-                        <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">StarCore</TextBlock>
-                        <Button Classes="accent" HorizontalAlignment="Right">Open</Button>
-                    </Panel>
-            
-                    <Grid RowDefinitions="Auto, *">
-                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0 0 10">
-                            <Expander.Header>Systems</Expander.Header>
-                            <StackPanel>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
-                            </StackPanel>
-                        </Expander>
-                    </Grid>
-                    <Grid RowDefinitions="Auto, *">
-                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                            <Expander.Header>Protocols</Expander.Header>
-                            <StackPanel>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
-                                <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
-                            </StackPanel>
-                        </Expander>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
-        </Panel>
-    </ThemeVariantScope>
+    <Panel Background="{DynamicResource BackgroundBrush}">
+        <ScrollViewer>
+            <StackPanel Margin="20">
+                <!-- Header -->
+                <Panel Margin="0 0 0 20">
+                    <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">StarCore</TextBlock>
+                    <Button Classes="accent" HorizontalAlignment="Right">Open</Button>
+                </Panel>
+        
+                <!-- Systems -->
+                <Grid RowDefinitions="Auto, *">
+                    <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0 0 10">
+                        <Expander.Header>Systems</Expander.Header>
+                        <StackPanel>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
+                        </StackPanel>
+                    </Expander>
+                </Grid>
+                
+                <!-- Protocols -->
+                <Grid RowDefinitions="Auto, *">
+                    <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Expander.Header>Protocols</Expander.Header>
+                        <StackPanel>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
+                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
+                        </StackPanel>
+                    </Expander>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Panel>
 </UserControl>

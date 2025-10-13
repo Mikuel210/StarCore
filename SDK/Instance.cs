@@ -15,7 +15,7 @@ public abstract class SystemInstance : Instance;
 public abstract class ProtocolInstance : Instance
 {
 
-	public bool CanClose { get; set; } = true;
+	public bool CanClientClose { get; set; } = true;
 	
 	public virtual void Close() { }
 

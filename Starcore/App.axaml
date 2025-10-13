@@ -2,19 +2,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:StarCore"
              x:Class="StarCore.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Light">
              
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
              
     <Application.Resources>
+        <!-- Create font resource -->
         <FontFamily x:Key="MainFont">avares://StarCore/Assets/Fonts#Funnel Display</FontFamily>
     </Application.Resources>
 
     <Application.Styles>
         <FluentTheme/>
+        
+        <!-- Set default font -->
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
         </Style>

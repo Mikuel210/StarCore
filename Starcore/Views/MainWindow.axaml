@@ -11,19 +11,23 @@
         
         <Window.Resources>
                 <ResourceDictionary>
+                        <!-- Set theme colors -->
                         <ResourceDictionary.ThemeDictionaries>
                                 <ResourceDictionary x:Key="Light">
                                         <SolidColorBrush x:Key="BackgroundBrush">White</SolidColorBrush>
                                         <SolidColorBrush x:Key="ForegroundBrush">Black</SolidColorBrush>
+                                        <SolidColorBrush x:Key="BorderBrush">#c7c7c7</SolidColorBrush>
                                 </ResourceDictionary>
                                 <ResourceDictionary x:Key="Dark">
                                         <SolidColorBrush x:Key="BackgroundBrush">#1a1a1a</SolidColorBrush>
                                         <SolidColorBrush x:Key="ForegroundBrush">White</SolidColorBrush>
+                                        <SolidColorBrush x:Key="BorderBrush">#4e4e4e</SolidColorBrush>
                                 </ResourceDictionary>
                         </ResourceDictionary.ThemeDictionaries>
                 </ResourceDictionary>
         </Window.Resources>
         
+        <!-- Render main view -->
         <views:MainView/>
         
 </Window>

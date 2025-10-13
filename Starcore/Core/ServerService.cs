@@ -1,33 +1,55 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
-using Server;
+using Microsoft.Extensions.DependencyInjection;
+using SDK;
 
 namespace StarCore.Core;
 
-public class HubService
+public class ServerService
 {
 
-	private string _url;
-	private HubConnection _connection;
+	private readonly HubConnection _connection;
 
-	public HubService(string url)
+	public ServerService(string url)
 	{
-		_url = url;
-		
+		// Create connection
 		_connection = new HubConnectionBuilder()
-			.WithUrl($"{_url}/hub")
+			.WithUrl($"{url}/hub")
 			.WithAutomaticReconnect()
 			.Build();
 
-		_connection.On<Command>("ServerToClient", HandleCommand);
+		_connection.On<CommandEnvelope>("HandleCommand", HandleCommand);
 	}
-	
-	public async Task ConnectAsync() => await _connection.StartAsync();
+
+	public async Task ConnectAsync()
+	{
+		// Start connection
+		await _connection.StartAsync();
+		
+		// Send connection request
+		Type clientType = typeof(DesktopClient);
+		if (OperatingSystem.IsBrowser()) clientType = typeof(BrowserClient);
+		if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()) clientType = typeof(MobileClient);
+
+		await SendCommandAsync(new ClientConnectCommand(clientType.AssemblyQualifiedName!));
+	}
 
 	public async Task DisconnectAsync() => await _connection.StopAsync();
-
-	private void HandleCommand(Command command) => Console.WriteLine($"Command received: {command.Message}");
-	public async void SendCommandAsync(Command command) => await _connection.SendAsync("ClientToServer", command);
+	
+	private void HandleCommand(CommandEnvelope envelope)
+	{
+		var command = ServerCommand.FromEnvelope(envelope);
+		Output.Info($"Command received from server: {command}");
+		
+		switch (command) {
+			default:
+				Output.Error($"Command not implemented: {command.GetType().Name}");
+				break;
+		}
+	}
+	public async Task SendCommandAsync(ClientCommand command) => 
+		await _connection.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 
 }

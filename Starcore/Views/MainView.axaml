@@ -14,16 +14,20 @@
   </Design.DataContext>
     
   <Grid>
+    <!-- Column Definitions -->
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="350" MinWidth="250" MaxWidth="600"></ColumnDefinition>
       <ColumnDefinition Width="1"></ColumnDefinition>
       <ColumnDefinition Width="*"></ColumnDefinition>
     </Grid.ColumnDefinitions>
     
+    <!-- Sidebar -->
     <views:SidebarView/>
     
-    <GridSplitter Grid.Column="1" Background="{DynamicResource ThemeBorderHighColor}" ResizeDirection="Columns"/>
+    <!-- Separator -->
+    <GridSplitter Grid.Column="1" Background="{DynamicResource BorderBrush}" ResizeDirection="Columns"/>
     
+    <!-- Content -->
     <views:ContentView Grid.Column="2"/>
   </Grid>
   

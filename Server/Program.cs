@@ -1,21 +1,23 @@
 using Microsoft.AspNetCore.ResponseCompression;
+using SDK;
 using Server;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-// Setup SignalR
+// Setup services
 builder.Services.AddSignalR();
 
-// Setup compression
 builder.Services.AddResponseCompression(opts =>
 {
 	opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
 		[ "application/octet-stream" ]);
 });
 
+// Create and run app
+var app = builder.Build();
 app.UseResponseCompression();
 
-// Map the hub and run the app
-app.MapHub<ServerHub>("/");
+app.MapHub<ServerHub>("/hub");
+app.MapGet("/", () => "All engines running");
+
 app.Run();
