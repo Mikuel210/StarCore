@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using SDK;
 using SDK.Communication;
 
-namespace StarCore.Core;
+namespace StarCore.Services;
 
 public static class ServerService
 {
@@ -12,7 +13,6 @@ public static class ServerService
 	public static HubConnection? Connection { get; private set; }
 	public static event Action? OnConnected;
 	
-
 	public static async Task ConnectAsync(string url)
 	{
 		// Disconnect
@@ -52,7 +52,7 @@ public static class ServerService
 		
 		switch (command) {
 			case ServerGetOpenInstancesCommand getOpenInstancesCommand:
-				InstanceService.UpdateOpenInstances(getOpenInstancesCommand.Instances);
+				InstanceService.UpdateOpenInstances(getOpenInstancesCommand.InstanceData);
 				break;
 			
 			default:

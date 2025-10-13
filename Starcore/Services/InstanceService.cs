@@ -1,22 +1,28 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using SDK;
 using SDK.Communication;
 
-namespace StarCore.Core;
+namespace StarCore.Services;
 
 public static class InstanceService
 {
 	
-	public static ObservableCollection<InstanceEnvelope> OpenInstances { get; private set; } = new();
+	public static List<InstanceData> OpenInstances { get; private set; } = new();
+	public static event Action? OnOpenInstancesUpdated; 
 
-	static InstanceService()
+	public static void Initialize()
 	{
-		ServerService.OnConnected += async () => {
-			Output.Info("Connected to server");
+		ServerService.OnConnected += async () => 
 			await ServerService.SendCommandAsync(new ClientGetOpenInstancesCommand());
-		};
 	}
-	
-	public static void UpdateOpenInstances(InstanceEnvelope[] instances) => OpenInstances = new(instances);
+
+	public static void UpdateOpenInstances(InstanceData[] instances)
+	{
+		OpenInstances = new(instances);
+		OnOpenInstancesUpdated?.Invoke();
+	}	
 
 }

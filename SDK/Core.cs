@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -7,6 +9,7 @@ public static class Core
 {
 	public static List<Type> Modules { get; private set; } = new();
 	public static List<Instance> OpenInstances { get; } = new();
+	public static event Action? OpenInstancesChanged;
 
 	public static void LoadModules() {
 		// Find modules .dll
@@ -65,7 +68,6 @@ public static class Core
 	private static void Open(Instance instance)
 	{
 		var moduleName = GetModuleName(instance);
-		OpenInstances.Add(instance);
 		
 		// Set title
 		instance.Title = moduleName;
@@ -73,6 +75,9 @@ public static class Core
 		// Open instance
 		try { instance.Open(); }
 		catch (Exception e) { Output.Error($"An exception was thrown when opening a {moduleName}: {e}"); }
+		
+		OpenInstances.Add(instance);
+		OpenInstancesChanged?.Invoke();
 		
 		Output.Info($"A new {moduleName} instance has been opened");
 	}
@@ -93,14 +98,14 @@ public static class Core
 	}
 	public static T Open<T>() where T : Instance => (T)Open(typeof(T));
 
-	public static List<Instance> GetOpenInstances(Type module)
+	[Pure] public static List<Instance> GetOpenInstances(Type module)
 	{
 		if (!module.IsAssignableTo(typeof(Instance)))
 			throw new ArgumentException("Type must be a module");
 		
 		return OpenInstances.Where(e => e.GetType() == module).ToList();
 	}
-	public static List<T> GetOpenInstances<T>() where T : Instance
+	[Pure] public static List<T> GetOpenInstances<T>() where T : Instance
 	{	
 		return OpenInstances
 			.Where(e => e is T)
@@ -108,15 +113,15 @@ public static class Core
 			.ToList();
 	}
 	
-	public static Instance? GetOpenInstance(Type module) {
+	[Pure] public static Instance? GetOpenInstance(Type module) {
 		if (!module.IsAssignableTo(typeof(Instance)))
 			throw new ArgumentException("Type must be a module");
 		
 		return GetOpenInstances(module).FirstOrDefault();	
 	}
-	public static T? GetOpenInstance<T>() where T : Instance => (T?)GetOpenInstance(typeof(T));
+	[Pure] public static T? GetOpenInstance<T>() where T : Instance => (T?)GetOpenInstance(typeof(T));
 
-	public static Instance GetSystemInstance(Type module)
+	[Pure] public static Instance GetSystemInstance(Type module)
 	{
 		if (!module.IsAssignableTo(typeof(SystemInstance)))
 			throw new ArgumentException("Type must be a system module");
@@ -124,7 +129,7 @@ public static class Core
 		return GetOpenInstance(module) ?? 
 			   throw new InvalidOperationException($"System is not initialized: {GetModuleName(module)}");
 	}
-	public static T GetSystemInstance<T>() where T : SystemInstance => (T)GetSystemInstance(typeof(T));
+	[Pure] public static T GetSystemInstance<T>() where T : SystemInstance => (T)GetSystemInstance(typeof(T));
 	
 	public static void Close(Instance instance)
 	{
@@ -140,6 +145,7 @@ public static class Core
 		catch (Exception e) { Output.Error($"An exception was thrown when closing a {moduleName}: {e}"); }
 		
 		OpenInstances.Remove(instance);
+		OpenInstancesChanged?.Invoke();
 	}
 	
 	#endregion
@@ -153,12 +159,29 @@ public static class Core
 			throw new ArgumentException("Type must be a module");
 		
 		// Get attribute value
-		var attribute = module.GetCustomAttribute<TAttribute>() as ModuleAttribute<TValue>;
-		if (attribute == null) return null;
+		if (module.GetCustomAttribute<TAttribute>() is not ModuleAttribute<TValue> attribute) 
+			return null;
 
 		return attribute.Value;
 	}
+	
+	public enum ModuleType
+	{
 
+		System,
+		Protocol
+
+	}
+	[Pure] public static ModuleType GetModuleType(Type module)
+	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
+		return module.IsAssignableTo(typeof(SystemInstance)) ? ModuleType.System : ModuleType.Protocol;	
+	}
+	[Pure] public static ModuleType GetModuleType(Instance instance) => GetModuleType(instance.GetType());
+	[Pure] public static ModuleType GetModuleType<T>() where T : Instance => GetModuleType(typeof(T));
+	
 	private static string SplitWords(string input)
 	{
 		string output = string.Empty;
@@ -172,47 +195,62 @@ public static class Core
 
 		return output;
 	}
-	public static string GetModuleName(Type module)
+	[Pure] public static string GetModuleName(Type module)
 	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
 		var attributeValue = GetMetadata<string, ModuleNameAttribute>(module);
 
 		if (attributeValue == null) return SplitWords(module.Name);
 		return (string)attributeValue;
 	}
-	public static string GetModuleName(Instance instance) => GetModuleName(instance.GetType());
-	public static string GetModuleName<T>() => GetModuleName(typeof(T));
+	[Pure] public static string GetModuleName(Instance instance) => GetModuleName(instance.GetType());
+	[Pure] public static string GetModuleName<T>() => GetModuleName(typeof(T));
 	
-	public static string GetModuleDescription(Type module)
+	[Pure] public static string GetModuleDescription(Type module)
 	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
 		var attributeValue = GetMetadata<string, ModuleDescriptionAttribute>(module);
 		return attributeValue as string ?? string.Empty;
 	}
-	public static string GetModuleDescription(Instance instance) => GetModuleDescription(instance.GetType());
-	public static string GetModuleDescription<T>() => GetModuleDescription(typeof(T));
+	[Pure] public static string GetModuleDescription(Instance instance) => GetModuleDescription(instance.GetType());
+	[Pure] public static string GetModuleDescription<T>() => GetModuleDescription(typeof(T));
 
-	public static bool GetShowOnClient(Type module)
+	[Pure] public static bool GetShowOnClient(Type module)
 	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
 		var attributeValue = GetMetadata<bool, ShowOnClientAttribute>(module);
 		return attributeValue as bool? ?? true;
 	}
-	public static bool GetShowOnClient(Instance instance) => GetShowOnClient(instance.GetType());
-	public static bool GetShowOnClient<T>() => GetShowOnClient(typeof(T));
+	[Pure] public static bool GetShowOnClient(Instance instance) => GetShowOnClient(instance.GetType());
+	[Pure] public static bool GetShowOnClient<T>() => GetShowOnClient(typeof(T));
 	
-	public static bool CanClientOpen(Type module)
+	[Pure] public static bool CanClientOpen(Type module)
 	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
 		var attributeValue = GetMetadata<bool, CanClientOpenAttribute>(module);
 		return attributeValue as bool? ?? true;
 	}
-	public static bool CanClientOpen(Instance instance) => CanClientOpen(instance.GetType());
-	public static bool CanClientOpen<T>() => CanClientOpen(typeof(T));
+	[Pure] public static bool CanClientOpen(Instance instance) => CanClientOpen(instance.GetType());
+	[Pure] public static bool CanClientOpen<T>() => CanClientOpen(typeof(T));
 
-	public static bool GetNotifyOnOpen(Type module)
+	[Pure] public static bool GetNotifyOnOpen(Type module)
 	{
+		if (!module.IsAssignableTo(typeof(Instance))) 
+			throw new ArgumentException("Type must be a module");
+		
 		var attributeValue = GetMetadata<bool, NotifyOnOpenAttribute>(module);
 		return attributeValue as bool? ?? true;
 	}
-	public static bool GetNotifyOnOpen(Instance instance) => GetNotifyOnOpen(instance.GetType());
-	public static bool GetNotifyOnOpen<T>() => GetNotifyOnOpen(typeof(T));
+	[Pure] public static bool GetNotifyOnOpen(Instance instance) => GetNotifyOnOpen(instance.GetType());
+	[Pure] public static bool GetNotifyOnOpen<T>() => GetNotifyOnOpen(typeof(T));
 	
 	#endregion
 

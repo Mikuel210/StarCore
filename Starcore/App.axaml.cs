@@ -4,7 +4,7 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using StarCore.Core;
+using StarCore.Services;
 using StarCore.ViewModels;
 using StarCore.Views;
 
@@ -12,8 +12,17 @@ namespace StarCore;
 
 public partial class App : Application
 {
-	public override void Initialize() { AvaloniaXamlLoader.Load(this); }
 
+	public App()
+	{
+		InstanceService.Initialize();
+		
+		// TODO: Let users choose their own server
+		_ = ServerService.ConnectAsync("http://localhost:5000");
+	}
+
+	public override void Initialize() => AvaloniaXamlLoader.Load(this);
+	
 	public override void OnFrameworkInitializationCompleted()
 	{
 		var mainViewModel = new MainViewModel();
@@ -26,7 +35,6 @@ public partial class App : Application
 
 		base.OnFrameworkInitializationCompleted();
 	}
-
 	private void DisableAvaloniaDataAnnotationValidation()
 	{
 		// Get an array of plugins to remove

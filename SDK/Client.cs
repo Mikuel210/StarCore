@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.SignalR;
+using SDK.Communication;
+
 namespace SDK;
 
-public abstract class Client(string connectionId) : INotificationCapability
+public abstract class Client(string connectionId, IClientProxy proxy) : INotificationCapability
 {
 	
 	public string ConnectionId { get; } = connectionId;
 	
-	internal void SendCommand(ServerCommand command) { } // TODO
+	internal void SendCommand(ServerCommand command) => 
+		proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 
 }
 
@@ -23,10 +27,10 @@ public interface INotificationCapability
 
 #region Clients
 
-public class BrowserClient(string connectionId) : Client(connectionId);
+public class BrowserClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
 
-public class DesktopClient(string connectionId) : Client(connectionId);
+public class DesktopClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
 
-public class MobileClient(string connectionId) : Client(connectionId);
+public class MobileClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
 
 #endregion

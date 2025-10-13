@@ -13,11 +13,26 @@ builder.Services.AddResponseCompression(opts =>
 		[ "application/octet-stream" ]);
 });
 
-// Create and run app
+// Create app
 var app = builder.Build();
 app.UseResponseCompression();
 
 app.MapHub<ServerHub>("/hub");
 app.MapGet("/", () => "All engines running");
 
+// Start Core
+var appLifetime = app.Lifetime;
+
+var thread = new Thread(() => {
+	Core.LoadModules();
+
+	while (!appLifetime.ApplicationStopping.IsCancellationRequested) {
+		Core.Tick();
+		Thread.Sleep(1);
+	}
+});
+
+thread.Start();
+
+// Start app
 app.Run();

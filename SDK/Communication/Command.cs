@@ -1,7 +1,6 @@
-using System.Reflection;
 using System.Text.Json;
 
-namespace SDK;
+namespace SDK.Communication;
 
 public abstract record Command
 {
@@ -18,15 +17,21 @@ public abstract record Command
 
 		for (int i = 0; i < parameters.Length; i++) {
 			var parameter = parameters[i];
+			var parameterType = parameter.ParameterType;
 			var payloadObject = envelope.Payload[i];
-
+			
 			if (payloadObject is not JsonElement jsonElement) {
-				payload.Add(payloadObject);
+				payload.Add(Convert.ChangeType(payloadObject, parameterType));
 				continue;
 			}
-
-			var parameterType = parameter.ParameterType;
-			object? value = jsonElement.Deserialize(parameterType);
+			
+			object? value = JsonSerializer.Deserialize(
+				jsonElement.GetRawText(), 
+				parameterType, 
+				new JsonSerializerOptions {
+					PropertyNameCaseInsensitive = true
+				}
+			);
 			
 			payload.Add(value);
 		}
@@ -94,7 +99,7 @@ public record struct CommandEnvelope(string CommandType, object?[] Payload)
 #region Server Commands
 
 public record ServerNotificationCommand(string Title, string Body) : ServerCommand;
-public record ServerGetOpenInstancesCommand() : ServerCommand;
+public record ServerGetOpenInstancesCommand(InstanceData[] InstanceData) : ServerCommand;
 
 #endregion
 

@@ -21,25 +21,27 @@
                 <Grid RowDefinitions="Auto, *">
                     <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0 0 10">
                         <Expander.Header>Systems</Expander.Header>
-                        <StackPanel>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
-                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding OpenSystems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button HorizontalAlignment="Stretch" Margin="0 5 0 5" Content="{Binding Title}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Expander>
                 </Grid>
                 
                 <!-- Protocols -->
                 <Grid RowDefinitions="Auto, *">
-                    <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <Expander IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0 0 10">
                         <Expander.Header>Protocols</Expander.Header>
-                        <StackPanel>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 1</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 2</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 10">Thing 3</Button>
-                            <Button HorizontalAlignment="Stretch" Margin="0 0 0 0">Thing 4</Button>
-                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding OpenProtocols}" >
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button HorizontalAlignment="Stretch" Margin="0 5 0 5" Content="{Binding Title}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Expander>
                 </Grid>
             </StackPanel>

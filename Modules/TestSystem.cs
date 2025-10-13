@@ -11,7 +11,15 @@ public class TestSystem : SystemInstance
 		Output.Info("Hi from test system!");
 
 		new Thread(() => {
-			Thread.Sleep(10_000);
+			Thread.Sleep(15_000);
+			Core.Open<TestProtocol>();
+			Thread.Sleep(5_000);
+			Core.Open<TestProtocol>();
+			Thread.Sleep(5_000);
+			Core.Open<TestProtocol>();
+			Thread.Sleep(5_000);
+			Core.Open<TestProtocol>();
+			Thread.Sleep(5_000);
 			Core.Open<TestProtocol>();
 		}).Start();
 	}
