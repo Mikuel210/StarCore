@@ -1,8 +1,11 @@
+using SDK.Communication;
+
 namespace SDK;
 
 public static class Server
 {
 
+	internal static ReplicatedStorage ReplicatedStorage { get; } = new();
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	public static void RegisterClient(Client client)
