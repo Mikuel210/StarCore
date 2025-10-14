@@ -51,7 +51,7 @@ public static class ServerService
 		Output.Info($"Command received from server: {command}");
 		
 		switch (command) {
-			case ServerGetOpenInstancesCommand getOpenInstancesCommand:
+			case ServerGetInstancesCommand getOpenInstancesCommand:
 				InstanceService.UpdateOpenInstances(getOpenInstancesCommand.InstanceData);
 				break;
 			

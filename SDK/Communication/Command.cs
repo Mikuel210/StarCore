@@ -99,13 +99,12 @@ public record struct CommandEnvelope(string CommandType, object?[] Payload)
 #region Server Commands
 
 public record ServerNotificationCommand(string Title, string Body) : ServerCommand;
-public record ServerGetOpenInstancesCommand(InstanceData[] InstanceData) : ServerCommand;
 
 #endregion
 
 #region Client Commands
 
 public record ClientConnectCommand(string ClientType) : ClientCommand;
-public record ClientGetOpenInstancesCommand() : ClientCommand;
+public record ClientGetOpenInstancesCommand : ClientCommand;
 
 #endregion

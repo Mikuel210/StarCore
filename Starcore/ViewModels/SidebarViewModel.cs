@@ -17,7 +17,7 @@ public partial class SidebarViewModel : ViewModelBase
 
 	public SidebarViewModel()
 	{
-		InstanceService.OnOpenInstancesUpdated += Update;
+		InstanceService.OpenInstancesUpdated += Update;
 		Update();
 	}
 
@@ -39,5 +39,6 @@ public partial class SidebarViewModel : ViewModelBase
 				.ForEach(OpenProtocols.Add);
 		});
 	}
-
+	public void FocusOnInstance(InstanceData instance) => InstanceService.FocusOnInstance(instance);
+	
 }

@@ -9,7 +9,9 @@ public static class Core
 {
 	public static List<Type> Modules { get; private set; } = new();
 	public static List<Instance> OpenInstances { get; } = new();
-	public static event Action? OpenInstancesChanged;
+	
+	public static event Action<Instance>? InstanceOpened;
+	public static event Action<Instance>? InstanceClosed;
 
 	public static void LoadModules() {
 		// Find modules .dll
@@ -77,7 +79,7 @@ public static class Core
 		catch (Exception e) { Output.Error($"An exception was thrown when opening a {moduleName}: {e}"); }
 		
 		OpenInstances.Add(instance);
-		OpenInstancesChanged?.Invoke();
+		InstanceOpened?.Invoke(instance);
 		
 		Output.Info($"A new {moduleName} instance has been opened");
 	}
@@ -145,7 +147,7 @@ public static class Core
 		catch (Exception e) { Output.Error($"An exception was thrown when closing a {moduleName}: {e}"); }
 		
 		OpenInstances.Remove(instance);
-		OpenInstancesChanged?.Invoke();
+		InstanceClosed?.Invoke(instance);
 	}
 	
 	#endregion

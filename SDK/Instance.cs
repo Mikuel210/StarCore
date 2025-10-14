@@ -1,9 +1,23 @@
+using System.ComponentModel;
+using SDK.Communication;
+
 namespace SDK;
 
-public abstract class Instance
+public abstract class Instance : INotifyPropertyChanged
 {
+	
+	public event PropertyChangedEventHandler? PropertyChanged;
 
-	public string Title { get; set; }
+	public Guid InstanceId { get; } = Guid.NewGuid();
+	public string Title { get; set; } = string.Empty;
+
+	public Instance()
+	{
+		PropertyChanged += (_, _) => {
+			foreach (var client in Server.ConnectedClients)
+				client.SendCommand(new ServerUpdateInstanceCommand(InstanceData.FromInstance(this)));
+		};
+	}
 	
 	public virtual void Open() { }
 	public virtual void Loop() { }

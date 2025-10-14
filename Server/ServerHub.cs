@@ -35,7 +35,7 @@ public class ServerHub : Hub
 			
 			case ClientGetOpenInstancesCommand:
 				var instanceDataArray = Core.OpenInstances.Select(InstanceData.FromInstance).ToArray();
-				SendCommand(new ServerGetOpenInstancesCommand(instanceDataArray));
+				SendCommand(new ServerGetInstancesCommand(instanceDataArray));
 				
 				break;
 			
