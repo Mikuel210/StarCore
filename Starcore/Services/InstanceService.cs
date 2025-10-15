@@ -21,8 +21,11 @@ public static class InstanceService
 
 	public static void Initialize()
 	{
+		// TODO
+		
+		/*
 		ServerService.OnConnected += async () => 
-			await ServerService.SendCommandAsync(new ClientGetOpenInstancesCommand());
+			await ServerService.SendCommandAsync(new ClientGetOpenInstancesCommand());*/
 	}
 
 	public static void UpdateOpenInstances(InstanceData[] instances)

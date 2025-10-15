@@ -10,8 +10,19 @@ namespace StarCore.Services;
 public static class ServerService
 {
 
+	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new(new());
+	
 	public static HubConnection? Connection { get; private set; }
 	public static event Action? OnConnected;
+
+	static ServerService()
+	{
+		// Set up replicated storage
+		ReplicatedStorage.ContainerChanged += async action => await SendContainerAction(action);
+
+		ReplicatedStorage.Container.OpenInstances.CollectionChanged += (_, _) =>
+			Output.Info(string.Join(", ", ReplicatedStorage.Container.OpenInstances));
+	}
 	
 	public static async Task ConnectAsync(string url)
 	{
@@ -25,6 +36,7 @@ public static class ServerService
 			.Build();
 
 		Connection.On<CommandEnvelope>("HandleCommand", HandleCommand);
+		Connection.On<ContainerActionEnvelope>("HandleContainerAction", HandleContainerAction);
 		
 		// Start connection
 		await Connection.StartAsync();
@@ -35,6 +47,9 @@ public static class ServerService
 		if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()) clientType = typeof(MobileClient);
 
 		await SendCommandAsync(new ClientConnectCommand(clientType.AssemblyQualifiedName!));
+		
+		// Fetch storage
+		ReplicatedStorage.Fetch();
 		
 		// Invoke event
 		OnConnected?.Invoke();
@@ -51,10 +66,6 @@ public static class ServerService
 		Output.Info($"Command received from server: {command}");
 		
 		switch (command) {
-			case ServerGetInstancesCommand getOpenInstancesCommand:
-				InstanceService.UpdateOpenInstances(getOpenInstancesCommand.InstanceData);
-				break;
-			
 			default:
 				Output.Error($"Command not implemented: {command.GetType().Name}");
 				break;
@@ -64,6 +75,35 @@ public static class ServerService
 	{
 		if (Connection != null)
 			await Connection.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));	
+	}
+
+	
+	private static void HandleContainerAction(ContainerActionEnvelope envelope)
+	{
+		// TODO: Recognize container type
+        ReplicatedStorage.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
+		
+		Output.Info($"RECEIVED ACTION: {envelope.ActionType}, {ContainerAction.FromEnvelope(envelope)}");
+
+		if (ContainerAction.FromEnvelope(envelope) is ContainerPostAction set) {
+			foreach (var par in set.Envelope.Properties)
+			{
+				Console.WriteLine($"Clave: {par.Key}, Valor: {par.Value}");
+			}
+		}
+		
+		Output.Info(string.Join(", ", ReplicatedStorage.Container.OpenInstances));
+		Output.Info(ReplicatedStorage.Container.ReplicatedString.Value);
+	}
+	private static async Task SendContainerAction(ContainerAction action)
+	{
+		if (Connection != null)
+			await Connection.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(action));
+		else {
+			Output.Info("DISREGARD:");	
+		}
+		
+		Output.Info($"SENT ACTION: {action}");
 	}
 
 }

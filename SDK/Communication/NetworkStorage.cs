@@ -119,15 +119,57 @@ public class ReplicatedContainer : Container
 {
 
 	public NetworkCollection<InstanceData> OpenInstances { get; } = [];
-	public NetworkValue<string> ReplicatedString { get; } = new(string.Empty);
+	public NetworkValue<string> ReplicatedString { get; init; } = new(string.Empty);
 
 }
 
 #endregion
 
-#region Storage
+#region Container Actions
 
-public abstract record ContainerAction;
+public abstract record ContainerAction
+{
+
+	public static ContainerAction FromEnvelope(ContainerActionEnvelope envelope)
+	{
+		Type actionType = Type.GetType(envelope.ActionType)!;
+		if (actionType is null) throw new InvalidOperationException("Invalid envelope type");
+		
+		// Deserialize payload
+		var constructor = actionType.GetConstructors().Single();
+		var parameters = constructor.GetParameters();
+		var payload = new List<object?>();
+
+		for (int i = 0; i < parameters.Length; i++) {
+			var parameter = parameters[i];
+			var parameterType = parameter.ParameterType;
+			var payloadObject = envelope.Payload[i];
+			
+			if (payloadObject is not JsonElement jsonElement) {
+				payload.Add(Convert.ChangeType(payloadObject, parameterType));
+				continue;
+			}
+			
+			object? value = JsonSerializer.Deserialize(
+				jsonElement.GetRawText(), 
+				parameterType, 
+				new JsonSerializerOptions {
+					PropertyNameCaseInsensitive = true
+				}
+			);
+			
+			payload.Add(value);
+		}
+
+		// Create instance
+		object instance = constructor.Invoke(payload.ToArray());
+		if (instance is not ContainerAction action) throw new InvalidOperationException("Invalid envelope payload");
+
+		return action;
+	}	
+
+}
+
 public abstract record ContainerPropertyUpdate(string PropertyName) : ContainerAction;
 
 public record ContainerFetchAction : ContainerAction;
@@ -140,13 +182,47 @@ public record ContainerRemoveAction(string PropertyName, int Index) : ContainerP
 public record ContainerReplaceAction(string PropertyName, int Index, object? Value) : ContainerPropertyUpdate(PropertyName);
 public record ContainerResetAction(string PropertyName) : ContainerPropertyUpdate(PropertyName);
 
-public class NetworkStorage
+public record struct ContainerActionEnvelope(string ActionType, object?[] Payload)
 {
 
-	public Container Container { get; }
+	public static ContainerActionEnvelope FromAction(ContainerAction action)
+	{
+		var envelope = new ContainerActionEnvelope();
+		
+		// Set type
+		var actionType = action.GetType();
+		envelope.ActionType = actionType.AssemblyQualifiedName!;
+		
+		// Set payload
+		var constructor = actionType.GetConstructors().Single();
+		var parameters = constructor.GetParameters();
+		List<object?> payload = new();
+
+		foreach (var parameter in parameters) {
+			var property = actionType.GetProperty(parameter.Name!)!;
+			var value = property.GetValue(action);
+			
+			payload.Add(value);
+		}
+
+		// Send
+		envelope.Payload = payload.ToArray();
+		return envelope;
+	}
+
+}
+
+#endregion
+
+#region Storage
+
+public class NetworkStorage<T> where T : Container
+{
+
+	public T Container { get; }
 	public event Action<ContainerAction>? ContainerChanged;
 
-	public NetworkStorage(Container container)
+	public NetworkStorage(T container)
 	{
 		Container = container;
 		Subscribe();
@@ -206,7 +282,7 @@ public class NetworkStorage
 	}
 	
 	public void Fetch() => ContainerChanged?.Invoke(new ContainerFetchAction());
-	public void ProcessContainerAction(ContainerAction action)
+	public void HandleContainerAction(ContainerAction action)
 	{
 		if (action is not ContainerPropertyUpdate update) {
 			switch (action) {
@@ -232,16 +308,16 @@ public class NetworkStorage
 
 		switch (propertyValue) {
 			case INetworkValue networkValue:
-				ProcessNetworkValueAction(networkValue, action);
+				HandleNetworkValueAction(networkValue, action);
 				break;
 			
 			case INetworkCollection networkCollection:
-				ProcessNetworkCollectionAction(networkCollection, action);
+				HandleNetworkCollectionAction(networkCollection, action);
 				break;
 		}
 	}
 
-	private void ProcessNetworkValueAction(INetworkValue networkValue, ContainerAction action)
+	private void HandleNetworkValueAction(INetworkValue networkValue, ContainerAction action)
 	{
 		if (action is not ContainerSetAction setAction)
 			throw new InvalidOperationException("Invalid container action type");
@@ -253,7 +329,7 @@ public class NetworkStorage
 		// Setting interface value won't trigger network update
 		networkValue.Value = setAction.Value;
 	}
-	private void ProcessNetworkCollectionAction(INetworkCollection networkCollection, ContainerAction action)
+	private void HandleNetworkCollectionAction(INetworkCollection networkCollection, ContainerAction action)
 	{
 		// Don't notify changes when a network update is processed
 		networkCollection.SetNotifyChanges(false);

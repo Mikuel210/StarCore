@@ -24,7 +24,7 @@ app.MapGet("/", () => "All engines running");
 var appLifetime = app.Lifetime;
 
 var thread = new Thread(() => {
-	Core.LoadModules();
+	Core.Initialize();
 
 	while (!appLifetime.ApplicationStopping.IsCancellationRequested) {
 		Core.Tick();

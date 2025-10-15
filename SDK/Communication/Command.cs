@@ -5,7 +5,7 @@ namespace SDK.Communication;
 public abstract record Command
 {
 
-	public static Command FromEnvelope(CommandEnvelope envelope)
+	protected static Command FromEnvelope(CommandEnvelope envelope)
 	{
 		Type commandType = Type.GetType(envelope.CommandType)!;
 		if (commandType is null) throw new InvalidOperationException("Invalid envelope type");
@@ -105,6 +105,5 @@ public record ServerNotificationCommand(string Title, string Body) : ServerComma
 #region Client Commands
 
 public record ClientConnectCommand(string ClientType) : ClientCommand;
-public record ClientGetOpenInstancesCommand : ClientCommand;
 
 #endregion

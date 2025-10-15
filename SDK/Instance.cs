@@ -13,10 +13,14 @@ public abstract class Instance : INotifyPropertyChanged
 
 	public Instance()
 	{
+		// TODO
+		
+		/*
 		PropertyChanged += (_, _) => {
 			foreach (var client in Server.ConnectedClients)
 				client.SendCommand(new ServerUpdateInstanceCommand(InstanceData.FromInstance(this)));
 		};
+		*/
 	}
 	
 	public virtual void Open() { }

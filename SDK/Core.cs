@@ -13,7 +13,12 @@ public static class Core
 	public static event Action<Instance>? InstanceOpened;
 	public static event Action<Instance>? InstanceClosed;
 
-	public static void LoadModules() {
+	public static void Initialize()
+	{
+		Server.Initialize();
+		LoadModules();
+	}
+	private static void LoadModules() {
 		// Find modules .dll
 		var modulesDirectory = Path.Combine(AppContext.BaseDirectory, "Modules/bin");
 		

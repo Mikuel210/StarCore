@@ -11,7 +11,8 @@ public abstract class Client(string connectionId, IClientProxy proxy) : INotific
 	internal void SendCommand(ServerCommand command) => 
 		proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 	
-	
+	internal void SendContainerAction(ContainerAction action) =>
+		proxy.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(action));
 
 }
 
