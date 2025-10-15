@@ -75,7 +75,7 @@ public abstract class Container
 	public void Populate(ContainerEnvelope envelope)
 	{
 		foreach (var property in envelope.Properties) {
-			var propertyName = property.Key;
+			var propertyName = property.Name;
 			var propertyValue = property.Value;
 			
 			var propertyInfo = GetType().GetProperty(propertyName);
@@ -99,8 +99,9 @@ public abstract class Container
 
 public struct ContainerEnvelope()
 {
-	
-	public Dictionary<string, object?> Properties { get; } = new();
+
+	public record Property(string Name, object? Value);
+	public List<Property> Properties { get; } = new();
 
 	public static ContainerEnvelope FromContainer(Container container)
 	{
@@ -108,8 +109,19 @@ public struct ContainerEnvelope()
 		var properties = container.GetType().GetProperties();
 
 		foreach (var property in properties)
-			envelope.Properties[property.Name] = property.GetValue(container);
+			envelope.Properties.Add(new(property.Name, property.GetValue(container)));
 
+        // TODO
+		foreach (var par in envelope.Properties)
+		{
+			Output.Debug(par);
+		}
+		
+		foreach (var e in (INetworkCollection)envelope.Properties.First(e => e.Name == "OpenInstances").Value)
+		{
+			Output.Debug($"thing: {e}");
+		}
+        
 		return envelope;
 	}
 
@@ -158,8 +170,22 @@ public abstract record ContainerAction
 				}
 			);
 			
+			Output.Debug(jsonElement.GetRawText() + $" | deserializing to {parameterType} | output: {value}");
+			if (value is ContainerEnvelope ce) Output.Debug($"| ce: {string.Join(", ", ce.Properties)}");
+			
+			// TODO: THIS IS THE ISSUE!!!!!!!!!!
+			
 			payload.Add(value);
 		}
+		
+		Output.Debug("HERE!!!!!!!!!!!!!!!!!");
+		payload.ForEach(e => {
+			Output.Debug(e);
+			if (e is ContainerEnvelope env)
+				Output.Debug("omg:::" + string.Join(", ", env.Properties));
+		});
+		
+		
 
 		// Create instance
 		object instance = constructor.Invoke(payload.ToArray());

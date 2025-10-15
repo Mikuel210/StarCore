@@ -86,9 +86,11 @@ public static class ServerService
 		Output.Info($"RECEIVED ACTION: {envelope.ActionType}, {ContainerAction.FromEnvelope(envelope)}");
 
 		if (ContainerAction.FromEnvelope(envelope) is ContainerPostAction set) {
+			Output.Debug("RECEIVED!!!!!!!!!!!!!!!!!!!");
+			
 			foreach (var par in set.Envelope.Properties)
 			{
-				Console.WriteLine($"Clave: {par.Key}, Valor: {par.Value}");
+				Console.WriteLine($"Clave: {par}");
 			}
 		}
 		
