@@ -5,7 +5,7 @@ namespace SDK;
 public static class Server
 {
 
-	internal static ReplicatedStorage ReplicatedStorage { get; } = new();
+	internal static NetworkStorage ReplicatedStorage { get; } = new(new ReplicatedContainer());
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	public static void RegisterClient(Client client)
