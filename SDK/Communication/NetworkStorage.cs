@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace SDK.Communication;
 
@@ -67,20 +69,57 @@ public class NetworkCollection<T> : ObservableCollection<T>, INetworkCollection
 
 #region Containers
 
-public abstract class Container;
+public abstract class Container
+{
+
+	public void Populate(ContainerEnvelope envelope)
+	{
+		foreach (var property in envelope.Properties) {
+			var propertyName = property.Key;
+			var propertyValue = property.Value;
+			
+			var propertyInfo = GetType().GetProperty(propertyName);
+			if (propertyInfo == null) continue;
+			
+			var propertyType = propertyInfo.PropertyType;
+
+			if (propertyValue is JsonObject jsonObject) {
+				propertyInfo.SetValue(this, jsonObject.Deserialize(propertyType, new JsonSerializerOptions {
+					PropertyNameCaseInsensitive = true
+				}));
+				
+				continue;
+			}
+			
+			propertyInfo.SetValue(this, Convert.ChangeType(propertyValue, propertyType));
+		}
+	}
+
+}
+
+public struct ContainerEnvelope()
+{
+	
+	public Dictionary<string, object?> Properties { get; } = new();
+
+	public static ContainerEnvelope FromContainer(Container container)
+	{
+		var envelope = new ContainerEnvelope();
+		var properties = container.GetType().GetProperties();
+
+		foreach (var property in properties)
+			envelope.Properties[property.Name] = property.GetValue(container);
+
+		return envelope;
+	}
+
+}
 
 public class ReplicatedContainer : Container
 {
 
 	public NetworkCollection<InstanceData> OpenInstances { get; } = [];
 	public NetworkValue<string> ReplicatedString { get; } = new(string.Empty);
-
-}
-
-public struct ContainerEnvelope
-{
-
-	public static ContainerEnvelope FromContainer(Container container) => new();
 
 }
 
@@ -176,8 +215,7 @@ public class NetworkStorage
 					break;
 				
 				case ContainerPostAction postAction:
-					// TODO: Replace container and resubscribe!!!
-					
+					Container.Populate(postAction.Envelope);
 					Subscribe();
 					
 					break;
