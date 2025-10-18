@@ -21,16 +21,18 @@ public abstract record Command
 			var payloadObject = envelope.Payload[i];
 			
 			if (payloadObject is not JsonElement jsonElement) {
-				payload.Add(Convert.ChangeType(payloadObject, parameterType));
+				if (payloadObject is IConvertible)
+					payload.Add(Convert.ChangeType(payloadObject, parameterType));
+				else
+					payload.Add(payloadObject);
+				
 				continue;
 			}
 			
 			object? value = JsonSerializer.Deserialize(
 				jsonElement.GetRawText(), 
 				parameterType, 
-				new JsonSerializerOptions {
-					PropertyNameCaseInsensitive = true
-				}
+				Server.JsonSerializerOptions
 			);
 			
 			payload.Add(value);

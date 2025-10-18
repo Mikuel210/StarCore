@@ -46,7 +46,6 @@ public class NetworkValue<T>(T value) : INetworkValue
 	public NetworkValue() : this(default!) { }
 
 }
-
 public class NetworkCollection<T> : ObservableCollection<T>, INetworkCollection
 {
 
@@ -72,57 +71,62 @@ public class NetworkCollection<T> : ObservableCollection<T>, INetworkCollection
 public abstract class Container
 {
 
-	public void Populate(ContainerEnvelope envelope)
-	{
-		foreach (var property in envelope.Properties) {
-			var propertyName = property.Name;
-			var propertyValue = property.Value;
-			
-			var propertyInfo = GetType().GetProperty(propertyName);
-			if (propertyInfo == null) continue;
-			
-			var propertyType = propertyInfo.PropertyType;
+	public record struct Property(string Name, object? Value);
 
-			if (propertyValue is JsonObject jsonObject) {
-				propertyInfo.SetValue(this, jsonObject.Deserialize(propertyType, new JsonSerializerOptions {
-					PropertyNameCaseInsensitive = true
-				}));
-				
-				continue;
+	public List<Property> ToProperties()
+	{
+		var properties = GetType().GetProperties();
+		var output = new List<Property>();
+
+		foreach (var property in properties) {
+			object? value = null;
+
+			if (property.PropertyType.IsAssignableTo(typeof(INetworkValue))) {
+				var networkValue = (INetworkValue)property.GetValue(this)!;
+				value = networkValue.Value;
+			} else if (property.PropertyType.IsAssignableTo(typeof(INetworkCollection))) {
+				var networkCollection = (INetworkCollection)property.GetValue(this)!;
+				value = networkCollection;
 			}
 			
-			propertyInfo.SetValue(this, Convert.ChangeType(propertyValue, propertyType));
+			output.Add(new(property.Name, value));
 		}
+
+		return output;
 	}
 
-}
-
-public struct ContainerEnvelope()
-{
-
-	public record Property(string Name, object? Value);
-	public List<Property> Properties { get; } = new();
-
-	public static ContainerEnvelope FromContainer(Container container)
+	public void Populate(List<Property> properties)
 	{
-		var envelope = new ContainerEnvelope();
-		var properties = container.GetType().GetProperties();
+		try {
+			foreach (var property in properties) {
+				var propertyName = property.Name;
+				var propertyValue = property.Value;
 
-		foreach (var property in properties)
-			envelope.Properties.Add(new(property.Name, property.GetValue(container)));
+				var propertyInfo = GetType().GetProperty(propertyName);
+				if (propertyInfo == null) continue;
 
-        // TODO
-		foreach (var par in envelope.Properties)
-		{
-			Output.Debug(par);
+				var propertyType = propertyInfo.PropertyType;
+
+				// Get value
+				if (propertyValue is JsonElement jsonElement) {
+					if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
+						propertyValue = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
+					else if (propertyType.IsAssignableTo(typeof(INetworkValue))) 
+						propertyValue = jsonElement.Deserialize(propertyType.GenericTypeArguments[0], Server.JsonSerializerOptions);
+				}
+				
+				// Assign value
+				if (propertyType.IsAssignableTo(typeof(INetworkValue))) {
+					var networkValue = (INetworkValue)propertyInfo.GetValue(this)!;
+					networkValue.Value = propertyValue;
+				}
+				else if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
+					propertyInfo.SetValue(this, propertyValue);
+			}
 		}
-		
-		foreach (var e in (INetworkCollection)envelope.Properties.First(e => e.Name == "OpenInstances").Value)
-		{
-			Output.Debug($"thing: {e}");
+		catch (Exception e) {
+			Output.Error($"EXCEPTION ON POPULATE: {e}");
 		}
-        
-		return envelope;
 	}
 
 }
@@ -130,7 +134,7 @@ public struct ContainerEnvelope()
 public class ReplicatedContainer : Container
 {
 
-	public NetworkCollection<InstanceData> OpenInstances { get; } = [];
+	public NetworkCollection<InstanceData> OpenInstances { get; set; } = [];
 	public NetworkValue<string> ReplicatedString { get; init; } = new(string.Empty);
 
 }
@@ -158,35 +162,23 @@ public abstract record ContainerAction
 			var payloadObject = envelope.Payload[i];
 			
 			if (payloadObject is not JsonElement jsonElement) {
-				payload.Add(Convert.ChangeType(payloadObject, parameterType));
+				if (payloadObject is IConvertible)
+					payload.Add(Convert.ChangeType(payloadObject, parameterType));
+				else
+					payload.Add(payloadObject);
+				
 				continue;
 			}
 			
 			object? value = JsonSerializer.Deserialize(
 				jsonElement.GetRawText(), 
 				parameterType, 
-				new JsonSerializerOptions {
-					PropertyNameCaseInsensitive = true
-				}
+				Server.JsonSerializerOptions
 			);
-			
-			Output.Debug(jsonElement.GetRawText() + $" | deserializing to {parameterType} | output: {value}");
-			if (value is ContainerEnvelope ce) Output.Debug($"| ce: {string.Join(", ", ce.Properties)}");
-			
-			// TODO: THIS IS THE ISSUE!!!!!!!!!!
 			
 			payload.Add(value);
 		}
 		
-		Output.Debug("HERE!!!!!!!!!!!!!!!!!");
-		payload.ForEach(e => {
-			Output.Debug(e);
-			if (e is ContainerEnvelope env)
-				Output.Debug("omg:::" + string.Join(", ", env.Properties));
-		});
-		
-		
-
 		// Create instance
 		object instance = constructor.Invoke(payload.ToArray());
 		if (instance is not ContainerAction action) throw new InvalidOperationException("Invalid envelope payload");
@@ -199,7 +191,7 @@ public abstract record ContainerAction
 public abstract record ContainerPropertyUpdate(string PropertyName) : ContainerAction;
 
 public record ContainerFetchAction : ContainerAction;
-public record ContainerPostAction(ContainerEnvelope Envelope) : ContainerAction;
+public record ContainerPostAction(List<Container.Property> Properties) : ContainerAction;
 	
 public record ContainerSetAction(string PropertyName, object? Value) : ContainerPropertyUpdate(PropertyName);
 public record ContainerAddAction(string PropertyName, int Index, IList Values) : ContainerPropertyUpdate(PropertyName);
@@ -254,7 +246,7 @@ public class NetworkStorage<T> where T : Container
 		Subscribe();
 	}
 
-	private void Subscribe()
+	private void Subscribe(bool subscribeToValues = true)
 	{
 		// Subscribe to property updates
 		var properties = Container.GetType().GetProperties();
@@ -265,6 +257,8 @@ public class NetworkStorage<T> where T : Container
 
 			switch (networkProperty) {
 				case INetworkValue networkValue:
+					if (!subscribeToValues) continue;
+					
 					networkValue.ValueChanged += value => 
 						ContainerChanged?.Invoke(new ContainerSetAction(propertyName, value));
 					
@@ -313,12 +307,15 @@ public class NetworkStorage<T> where T : Container
 		if (action is not ContainerPropertyUpdate update) {
 			switch (action) {
 				case ContainerFetchAction:
-					ContainerChanged?.Invoke(new ContainerPostAction(ContainerEnvelope.FromContainer(Container)));
+					Output.Debug($"Fetch received, posting: {string.Join(", ", Container.ToProperties())}");
+					ContainerChanged?.Invoke(new ContainerPostAction(Container.ToProperties()));
 					break;
 				
 				case ContainerPostAction postAction:
-					Container.Populate(postAction.Envelope);
-					Subscribe();
+					Output.Debug($"Post received, populating: {string.Join(", ", postAction.Properties)}");
+					Container.Populate(postAction.Properties);
+					Output.Debug($"Populated: {string.Join(", ", Container.ToProperties())}");
+					Subscribe(false);
 					
 					break;
 			}

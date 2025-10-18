@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using SDK;
 using SDK.Communication;
 
@@ -84,15 +85,6 @@ public static class ServerService
         ReplicatedStorage.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
 		
 		Output.Info($"RECEIVED ACTION: {envelope.ActionType}, {ContainerAction.FromEnvelope(envelope)}");
-
-		if (ContainerAction.FromEnvelope(envelope) is ContainerPostAction set) {
-			Output.Debug("RECEIVED!!!!!!!!!!!!!!!!!!!");
-			
-			foreach (var par in set.Envelope.Properties)
-			{
-				Console.WriteLine($"Clave: {par}");
-			}
-		}
 		
 		Output.Info(string.Join(", ", ReplicatedStorage.Container.OpenInstances));
 		Output.Info(ReplicatedStorage.Container.ReplicatedString.Value);

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using SDK.Communication;
 
 namespace SDK;
@@ -5,10 +6,13 @@ namespace SDK;
 public static class Server
 {
 
+	public static JsonSerializerOptions JsonSerializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
+
 	internal static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new(new() {
 		OpenInstances = { new(Guid.NewGuid(), Core.ModuleType.Protocol, "hiiii", "omhg", "asdf", true, false) },
 		ReplicatedString = new("hi")
 	});
+	
 	public static List<Client> ConnectedClients { get; } = [];
 
 	internal static void Initialize()

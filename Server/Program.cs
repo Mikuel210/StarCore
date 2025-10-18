@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using SDK;
+using SDK.Communication;
 using Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,9 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Setup services
 builder.Services.AddSignalR();
 
-builder.Services.AddResponseCompression(opts =>
+builder.Services.AddResponseCompression(options =>
 {
-	opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+	options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
 		[ "application/octet-stream" ]);
 });
 
