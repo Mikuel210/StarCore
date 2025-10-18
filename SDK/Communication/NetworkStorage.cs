@@ -128,6 +128,7 @@ public abstract class Container
 public class ReplicatedContainer : Container
 {
 
+	public NetworkCollection<ModuleData> Modules { get; set; } = [];
 	public NetworkCollection<InstanceData> OpenInstances { get; set; } = [];
 
 }
@@ -135,7 +136,7 @@ public class ReplicatedContainer : Container
 public class ClientContainer : Container
 {
 
-	public NetworkCollection<Guid> FocusedInstances { get; set; } = [];
+	public NetworkValue<Guid> FocusedInstance { get; } = new();
 
 }
 
@@ -348,13 +349,18 @@ public class NetworkStorage<T> where T : Container, new()
 	{
 		if (action is not ContainerSetAction setAction)
 			throw new InvalidOperationException("Invalid container action type");
+
+		var value = setAction.Value;
+		var valueType = networkValue.GetType().GenericTypeArguments[0];
+
+		if (value is JsonElement jsonElement) 
+			value = jsonElement.Deserialize(valueType);
 		
-		if (setAction.Value != null && networkValue.GetType().GenericTypeArguments.Length > 0 && 
-			!setAction.Value.GetType().IsAssignableTo(networkValue.GetType().GenericTypeArguments[0]))
+		if (value != null && !value.GetType().IsAssignableTo(valueType))
 			throw new InvalidOperationException("Invalid container set action value type");
 		
 		// Setting interface value won't trigger network update
-		networkValue.Value = setAction.Value;
+		networkValue.Value = value;
 	}
 	private void HandleNetworkCollectionAction(INetworkCollection networkCollection, ContainerAction action)
 	{

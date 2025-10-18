@@ -14,7 +14,22 @@
                 <!-- Header -->
                 <Panel Margin="0 0 0 20">
                     <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">StarCore</TextBlock>
-                    <Button Classes="accent" HorizontalAlignment="Right">Open</Button>
+                    <Button Classes="accent" HorizontalAlignment="Right">
+                        Open
+                        <Button.Flyout>
+                            <Flyout>
+                                <ItemsControl ItemsSource="{Binding OpenableModules}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding ModuleName}" 
+                                                    HorizontalAlignment="Stretch"
+                                                    Click="ProtocolButton_OnClick"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </Panel>
         
                 <!-- Systems -->

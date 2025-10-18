@@ -33,6 +33,12 @@ public class ServerHub : Hub
 				SDK.Server.RegisterClient(client);
 				break;
 			
+			case ClientOpenCommand openCommand:
+				var type = Core.Modules.FirstOrDefault(e => e.AssemblyQualifiedName == openCommand.Module);
+				if (type != null) Core.Open(type);
+				
+				break;
+			
 			default:
 				Output.Error($"Command not implemented: {command.GetType().Name}");
 				break;
@@ -42,7 +48,7 @@ public class ServerHub : Hub
 		Proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 
 	public void HandleContainerAction(ContainerActionEnvelope envelope) => 
-		SDK.Server.HandleContainerAction(
+		ServerBridge.HandleContainerAction(
 			Client.FromConnectionId(Context.ConnectionId)!,
 			Type.GetType(envelope.ContainerType)!,
 			ContainerAction.FromEnvelope(envelope)

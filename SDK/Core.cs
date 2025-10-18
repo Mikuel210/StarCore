@@ -7,9 +7,10 @@ namespace SDK;
 
 public static class Core
 {
-	public static List<Type> Modules { get; private set; } = new();
-	public static List<Instance> OpenInstances { get; } = new();
-	
+	public static List<Type> Modules { get; private set; } = [];
+	public static List<Instance> OpenInstances { get; } = [];
+
+	internal static event Action? ModulesLoaded;
 	public static event Action<Instance>? InstanceOpened;
 	public static event Action<Instance>? InstanceClosed;
 
@@ -17,6 +18,7 @@ public static class Core
 	{
 		Server.Initialize();
 		LoadModules();
+		OpenSystems();
 	}
 	private static void LoadModules() {
 		// Find modules .dll
@@ -51,9 +53,8 @@ public static class Core
 
 		Modules = assembly.GetTypes().Where(e => e.IsAssignableTo(typeof(Instance))).ToList();
 		
-		// Initialize instances
-		OpenSystems();
-		
+		// Invoke event
+		ModulesLoaded?.Invoke();
 		Output.Success("Modules were loaded successfully");
 	}
 	private static void OpenSystems()

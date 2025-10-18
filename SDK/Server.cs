@@ -14,6 +14,9 @@ public static class Server
 	
 	internal static void Initialize()
 	{
+		Core.ModulesLoaded += () =>
+			Core.Modules.ForEach(e => ReplicatedStorage.Container.Modules.Add(ModuleData.FromModule(e)));
+		
 		Core.InstanceOpened += instance => {
 			ReplicatedStorage.Container.OpenInstances.Add(InstanceData.FromInstance(instance));
 
@@ -21,6 +24,7 @@ public static class Server
 			instance.PropertyChanged += (_, _) => {
 				var index = ReplicatedStorage.Container.OpenInstances
 					.IndexOf(ReplicatedStorage.Container.OpenInstances
+						.ToList() // Avoid invalid operation exception
 						.First(e => e.InstanceId == instance.InstanceId));
 				
 				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
@@ -54,13 +58,5 @@ public static class Server
 		// Remove client storage
 		ClientStorage.Remove(connectionId);
 	}
-
-	public static void HandleContainerAction(Client client, Type containerType, ContainerAction action)
-	{
-		if (containerType == typeof(ReplicatedContainer))
-			ReplicatedStorage.HandleContainerAction(action);
-		if (containerType == typeof(ClientContainer))
-			ClientStorage[client.ConnectionId].HandleContainerAction(action);
-	}
-
+	
 }

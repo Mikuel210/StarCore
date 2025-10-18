@@ -107,5 +107,6 @@ public record ServerNotificationCommand(string Title, string Body) : ServerComma
 #region Client Commands
 
 public record ClientConnectCommand(string ClientType) : ClientCommand;
+public record ClientOpenCommand(string Module) : ClientCommand;
 
 #endregion

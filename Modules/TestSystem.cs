@@ -9,18 +9,14 @@ public class TestSystem : SystemInstance
 	public override void Open()
 	{
 		Output.Info("Hi from test system!");
-
+		
 		new Thread(() => {
-			Thread.Sleep(15_000);
-			Core.Open<TestProtocol>();
-			Thread.Sleep(5_000);
-			Core.Open<TestProtocol>();
-			Thread.Sleep(5_000);
-			Core.Open<TestProtocol>();
-			Thread.Sleep(5_000);
-			Core.Open<TestProtocol>();
-			Thread.Sleep(5_000);
-			Core.Open<TestProtocol>();
+			while (true) {
+				Core.GetOpenInstances<TestProtocol>().ForEach(e => e.Title = "Focus on RUNTIME");
+				Thread.Sleep(1_000);
+				Core.GetOpenInstances<TestProtocol>().ForEach(e => e.Title = "Focus on Starkit");
+				Thread.Sleep(1_000);	
+			}
 		}).Start();
 	}
 

@@ -60,8 +60,8 @@ public static class ServerService
 	}
 	public static async Task SendCommandAsync(ClientCommand command)
 	{
-		if (Connection != null)
-			await Connection.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));	
+		if (Connection is not { State: HubConnectionState.Connected }) return;
+		await Connection.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));	
 	}
 	
 	private static void HandleContainerAction(ContainerActionEnvelope envelope)
@@ -75,7 +75,7 @@ public static class ServerService
 	}
 	public static async Task SendContainerAction(Type containerType, ContainerAction action)
 	{
-		if (Connection == null) return;
+		if (Connection is not { State: HubConnectionState.Connected }) return;
 		
 		await Connection.SendAsync("HandleContainerAction", 
 			ContainerActionEnvelope.FromAction(containerType, action));
