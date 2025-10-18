@@ -108,5 +108,6 @@ public record ServerNotificationCommand(string Title, string Body) : ServerComma
 
 public record ClientConnectCommand(string ClientType) : ClientCommand;
 public record ClientOpenCommand(string Module) : ClientCommand;
+public record ClientCloseCommand(Guid InstanceId) : ClientCommand;
 
 #endregion

@@ -7,7 +7,8 @@ namespace Server;
 public class ServerHub : Hub
 {
 
-	private ISingleClientProxy Proxy => Clients.Client(Context.ConnectionId); 
+	private ISingleClientProxy Proxy => Clients.Client(Context.ConnectionId);
+	private Client Client => Client.FromConnectionId(Context.ConnectionId)!;
 	
 	public override Task OnDisconnectedAsync(Exception? exception)
 	{
@@ -27,16 +28,25 @@ public class ServerHub : Hub
 				var clientType = Type.GetType(connectCommand.ClientType);
 				if (clientType is null) throw new InvalidOperationException("Invalid client type");
 				
-				var instance = Activator.CreateInstance(clientType, Context.ConnectionId, Proxy);
-				if (instance is not Client client) throw new InvalidOperationException("Invalid client type");
+				var clientInstance = Activator.CreateInstance(clientType, Context.ConnectionId, Proxy);
+				if (clientInstance is not Client client) throw new InvalidOperationException("Invalid client type");
 				
 				SDK.Server.RegisterClient(client);
 				break;
 			
 			case ClientOpenCommand openCommand:
 				var type = Core.Modules.FirstOrDefault(e => e.AssemblyQualifiedName == openCommand.Module);
-				if (type != null) Core.Open(type);
+				if (type == null) break; 
 				
+				var openedProtocol = Core.Open(type);
+				SDK.Server.ClientStorage[Client.ConnectionId].Container.FocusedInstance.Value = openedProtocol.InstanceId;
+				
+				break;
+			
+			case ClientCloseCommand closeCommand:
+				var protocolToClose = Instance.FromInstanceId(closeCommand.InstanceId);
+				if (protocolToClose != null) Core.Close(protocolToClose);
+
 				break;
 			
 			default:
@@ -47,11 +57,16 @@ public class ServerHub : Hub
 	private void SendCommand(ServerCommand command) =>
 		Proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 
-	public void HandleContainerAction(ContainerActionEnvelope envelope) => 
-		ServerBridge.HandleContainerAction(
-			Client.FromConnectionId(Context.ConnectionId)!,
-			Type.GetType(envelope.ContainerType)!,
-			ContainerAction.FromEnvelope(envelope)
-		);
+	public void HandleContainerAction(ContainerActionEnvelope envelope)
+	{
+		var client = Client.FromConnectionId(Context.ConnectionId)!;
+		var containerType = Type.GetType(envelope.ContainerType);
+		var action = ContainerAction.FromEnvelope(envelope);
+		
+		if (containerType == typeof(ReplicatedContainer))
+			SDK.Server.ReplicatedStorage.HandleContainerAction(action);
+		if (containerType == typeof(ClientContainer))
+			SDK.Server.ClientStorage[client.ConnectionId].HandleContainerAction(action);
+	}
 	
 }

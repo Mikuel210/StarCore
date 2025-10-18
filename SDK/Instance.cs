@@ -10,6 +10,10 @@ public abstract class Instance : INotifyPropertyChanged
 
 	public Guid InstanceId { get; } = Guid.NewGuid();
 	public string Title { get; set; } = string.Empty;
+
+	public static Instance? FromInstanceId(string instanceId) =>
+		Core.OpenInstances.FirstOrDefault(e => e.InstanceId.ToString() == instanceId);
+	public static Instance? FromInstanceId(Guid instanceId) => FromInstanceId(instanceId.ToString());
 	
 	public virtual void Open() { }
 	public virtual void Loop() { }

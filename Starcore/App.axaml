@@ -20,5 +20,17 @@
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
         </Style>
+        
+        <!-- Define button colors -->
+        <Style Selector="Button.danger">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#C62828"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#B71C1C"/>
+        </Style>
+        <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#8E0000"/>
+        </Style>
     </Application.Styles>
 </Application>

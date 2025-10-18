@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StarCore.ViewModels"
              xmlns:views="clr-namespace:StarCore.Views"
+             xmlns:controls="clr-namespace:StarCore.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="StarCore.Views.SidebarView"
              x:DataType="vm:SidebarViewModel">
@@ -17,7 +18,7 @@
                     <Button Classes="accent" HorizontalAlignment="Right">
                         Open
                         <Button.Flyout>
-                            <Flyout>
+                            <controls:ButtonFlyout>
                                 <ItemsControl ItemsSource="{Binding OpenableModules}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -27,7 +28,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                            </Flyout>
+                            </controls:ButtonFlyout>
                         </Button.Flyout>
                     </Button>
                 </Panel>

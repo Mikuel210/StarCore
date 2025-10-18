@@ -10,6 +10,7 @@ namespace StarCore.ViewModels;
 public partial class ContentViewModel : ViewModelBase
 {
 
+	[ObservableProperty] private bool _canClose;
 	[ObservableProperty] private string _title = string.Empty;
 
 	public ContentViewModel()
@@ -26,7 +27,8 @@ public partial class ContentViewModel : ViewModelBase
 
 		var focusedInstance = ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
 			.FirstOrDefault(e => e.InstanceId == focusedInstanceId);
-		
+
+		CanClose = focusedInstance?.CanClientClose ?? false;
 		Title = focusedInstance?.Title ?? string.Empty;	
 	}
 

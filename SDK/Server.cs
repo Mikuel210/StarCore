@@ -1,5 +1,6 @@
 using System.Text.Json;
 using SDK.Communication;
+using SDK.Helpers;
 
 namespace SDK;
 
@@ -8,8 +9,8 @@ public static class Server
 
 	public static JsonSerializerOptions JsonSerializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
 
-	internal static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
-	internal static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
+	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
+	public static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	internal static void Initialize()
@@ -24,7 +25,7 @@ public static class Server
 			instance.PropertyChanged += (_, _) => {
 				var index = ReplicatedStorage.Container.OpenInstances
 					.IndexOf(ReplicatedStorage.Container.OpenInstances
-						.ToList() // Avoid invalid operation exception
+						.ToListSafe()
 						.First(e => e.InstanceId == instance.InstanceId));
 				
 				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
@@ -58,5 +59,5 @@ public static class Server
 		// Remove client storage
 		ClientStorage.Remove(connectionId);
 	}
-	
+
 }

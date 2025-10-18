@@ -5,6 +5,7 @@ using System.Linq;
 using Avalonia.Threading;
 using SDK;
 using SDK.Communication;
+using SDK.Helpers;
 using StarCore.Services;
 
 namespace StarCore.ViewModels;
@@ -61,7 +62,7 @@ public partial class SidebarViewModel : ViewModelBase
 
 		return ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
 			.Where(e => modules.Contains(e.Module))
-			.ToList();
+			.ToListSafe();
 	}
 	
 }
