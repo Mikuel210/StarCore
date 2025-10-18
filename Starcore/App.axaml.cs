@@ -16,6 +16,7 @@ public partial class App : Application
 	public App()
 	{
 		ReplicatedStorageService.Initialize();
+		ClientStorageService.Initialize();
 		
 		// TODO: Let users choose their own server
 		_ = ServerService.ConnectAsync("http://localhost:5000");

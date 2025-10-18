@@ -10,18 +10,6 @@ public abstract class Instance : INotifyPropertyChanged
 
 	public Guid InstanceId { get; } = Guid.NewGuid();
 	public string Title { get; set; } = string.Empty;
-
-	public Instance()
-	{
-		// TODO
-		
-		/*
-		PropertyChanged += (_, _) => {
-			foreach (var client in Server.ConnectedClients)
-				client.SendCommand(new ServerUpdateInstanceCommand(InstanceData.FromInstance(this)));
-		};
-		*/
-	}
 	
 	public virtual void Open() { }
 	public virtual void Loop() { }

@@ -18,7 +18,7 @@ public partial class SidebarViewModel : ViewModelBase
 	public SidebarViewModel()
 	{
 		ReplicatedStorageService.ReplicatedStorage.ContainerUpdated += Update;
-		ClientStorageService.FocusedInstanceChanged += Update;
+		ClientStorageService.ClientStorage.Container.FocusedInstances.NetworkCollectionChanged += (_, _) => Update();
 		
 		Update();
 	}

@@ -7,12 +7,15 @@ public abstract class Client(string connectionId, IClientProxy proxy) : INotific
 {
 	
 	public string ConnectionId { get; } = connectionId;
+
+	public static Client? FromConnectionId(string connectionId) =>
+		Server.ConnectedClients.FirstOrDefault(e => e.ConnectionId == connectionId);
 	
 	internal void SendCommand(ServerCommand command) => 
 		proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
-	
-	internal void SendContainerAction(ContainerAction action) =>
-		proxy.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(action));
+	internal void SendContainerAction(Type containerType, ContainerAction action) =>
+		proxy.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(containerType, action));
+	internal void SendContainerAction<T>(ContainerAction action) => SendContainerAction(typeof(T), action);
 
 }
 

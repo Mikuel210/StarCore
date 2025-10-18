@@ -15,11 +15,19 @@ public partial class ContentViewModel : ViewModelBase
 	public ContentViewModel()
 	{
 		ReplicatedStorageService.ReplicatedStorage.ContainerUpdated += Update;
-		ClientStorageService.FocusedInstanceChanged += Update;
+		ClientStorageService.ClientStorage.Container.FocusedInstances.NetworkCollectionChanged += (_, _) => Update();
 		
 		Update();
 	}
 
-	private void Update() => Title = ClientStorageService.FocusedInstance?.Title ?? string.Empty;
+	private void Update()
+	{
+		var focusedInstanceId = ClientStorageService.ClientStorage.Container.FocusedInstances.ElementAtOrDefault(0);
+
+		var focusedInstance = ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
+			.FirstOrDefault(e => e.InstanceId == focusedInstanceId);
+		
+		Title = focusedInstance?.Title ?? string.Empty;	
+	}
 
 }

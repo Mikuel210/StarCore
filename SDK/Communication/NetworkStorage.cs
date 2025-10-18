@@ -55,9 +55,7 @@ public class NetworkCollection<T> : ObservableCollection<T>, INetworkCollection
 	{
 		CollectionChanged += (sender, e) => {
 			if (!_notifyChanges) return;
-				
 			NetworkCollectionChanged?.Invoke(sender, e);
-			Output.Debug("Collection changed");
 		};	
 	}
 	
@@ -131,7 +129,13 @@ public class ReplicatedContainer : Container
 {
 
 	public NetworkCollection<InstanceData> OpenInstances { get; set; } = [];
-	public NetworkValue<string> ReplicatedString { get; init; } = new(string.Empty);
+
+}
+
+public class ClientContainer : Container
+{
+
+	public NetworkCollection<Guid> FocusedInstances { get; set; } = [];
 
 }
 
@@ -196,15 +200,16 @@ public record ContainerRemoveAction(string PropertyName, int Index) : ContainerP
 public record ContainerReplaceAction(string PropertyName, int Index, object? Value) : ContainerPropertyUpdate(PropertyName);
 public record ContainerResetAction(string PropertyName) : ContainerPropertyUpdate(PropertyName);
 
-public record struct ContainerActionEnvelope(string ActionType, object?[] Payload)
+public record struct ContainerActionEnvelope(string ContainerType, string ActionType, object?[] Payload)
 {
 
-	public static ContainerActionEnvelope FromAction(ContainerAction action)
+	public static ContainerActionEnvelope FromAction(Type containerType, ContainerAction action)
 	{
 		var envelope = new ContainerActionEnvelope();
 		
 		// Set type
 		var actionType = action.GetType();
+		envelope.ContainerType = containerType.AssemblyQualifiedName!;
 		envelope.ActionType = actionType.AssemblyQualifiedName!;
 		
 		// Set payload
@@ -218,11 +223,12 @@ public record struct ContainerActionEnvelope(string ActionType, object?[] Payloa
 			
 			payload.Add(value);
 		}
-
-		// Send
+		
 		envelope.Payload = payload.ToArray();
 		return envelope;
 	}
+
+	public static ContainerActionEnvelope FromAction<T>(ContainerAction action) => FromAction(typeof(T), action);
 
 }
 
@@ -230,7 +236,7 @@ public record struct ContainerActionEnvelope(string ActionType, object?[] Payloa
 
 #region Storage
 
-public class NetworkStorage<T> where T : Container
+public class NetworkStorage<T> where T : Container, new()
 {
 
 	public T Container { get; }
@@ -242,6 +248,7 @@ public class NetworkStorage<T> where T : Container
 		Container = container;
 		Subscribe();
 	}
+	public NetworkStorage() : this(new()) { }
 
 	private void Subscribe(bool subscribeToValues = true)
 	{
@@ -304,15 +311,11 @@ public class NetworkStorage<T> where T : Container
 		if (action is not ContainerPropertyUpdate update) {
 			switch (action) {
 				case ContainerFetchAction:
-					Output.Debug($"Fetch received, posting: {string.Join(", ", Container.ToProperties())}");
 					ContainerChanged?.Invoke(new ContainerPostAction(Container.ToProperties()));
 					break;
 				
 				case ContainerPostAction postAction:
-					Output.Debug($"Post received, populating: {string.Join(", ", postAction.Properties)}");
 					Container.Populate(postAction.Properties);
-					
-					Output.Debug($"Populated: {string.Join(", ", Container.ToProperties())}");
 					Subscribe(false);
 					
 					break;

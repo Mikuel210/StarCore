@@ -8,7 +8,7 @@ namespace StarCore.Services;
 public static class ReplicatedStorageService
 {
 	
-	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new(new());
+	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
 
 	public static void Initialize()
 	{
@@ -16,19 +16,8 @@ public static class ReplicatedStorageService
 		ServerService.OnConnected += ReplicatedStorage.Fetch;	
 	}
 
-	public static void HandleContainerAction(ContainerAction action)
-	{
-		ReplicatedStorage.HandleContainerAction(action);
-		
-		// Debug
-		Output.Debug($"RECEIVED ACTION: {action}");
-		Output.Debug(string.Join(", ", ReplicatedStorage.Container.OpenInstances));
-		Output.Debug(ReplicatedStorage.Container.ReplicatedString.Value);
-	}
-	private static async Task SendContainerAction(ContainerAction action)
-	{
-		if (ServerService.Connection != null)
-			await ServerService.Connection.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(action));
-	}
+	public static void HandleContainerAction(ContainerAction action) => ReplicatedStorage.HandleContainerAction(action);
+	private static async Task SendContainerAction(ContainerAction action) =>
+		await ServerService.SendContainerAction<ReplicatedContainer>(action);
 
 }

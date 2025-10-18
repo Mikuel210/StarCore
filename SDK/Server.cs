@@ -8,13 +8,10 @@ public static class Server
 
 	public static JsonSerializerOptions JsonSerializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
 
-	internal static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new(new() {
-		OpenInstances = [],
-		ReplicatedString = new("Replicated string")
-	});
-	
+	internal static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
+	internal static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
 	public static List<Client> ConnectedClients { get; } = [];
-
+	
 	internal static void Initialize()
 	{
 		Core.InstanceOpened += instance => {
@@ -38,21 +35,32 @@ public static class Server
 					.Single());
 
 		ReplicatedStorage.ContainerChanged += action =>
-			ConnectedClients.ForEach(e => e.SendContainerAction(action));
+			ConnectedClients.ForEach(e => e.SendContainerAction<ReplicatedContainer>(action));
 	}
 	
 	public static void RegisterClient(Client client)
 	{
 		Output.Info($"Client connected: {client.ConnectionId}");
 		ConnectedClients.Add(client);
+		
+		// Create client storage
+		ClientStorage.Add(client.ConnectionId, new());
 	}
 	public static void UnregisterClient(string connectionId)
 	{
 		Output.Info($"Client disconnected: {connectionId}");
 		ConnectedClients.RemoveAll(e => e.ConnectionId == connectionId);
+		
+		// Remove client storage
+		ClientStorage.Remove(connectionId);
 	}
-	
-	public static void HandleContainerAction(ContainerAction action) =>
-		ReplicatedStorage.HandleContainerAction(action);
+
+	public static void HandleContainerAction(Client client, Type containerType, ContainerAction action)
+	{
+		if (containerType == typeof(ReplicatedContainer))
+			ReplicatedStorage.HandleContainerAction(action);
+		if (containerType == typeof(ClientContainer))
+			ClientStorage[client.ConnectionId].HandleContainerAction(action);
+	}
 
 }

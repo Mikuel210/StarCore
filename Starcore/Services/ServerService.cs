@@ -66,13 +66,21 @@ public static class ServerService
 	
 	private static void HandleContainerAction(ContainerActionEnvelope envelope)
 	{
-		// TODO: Recognize container type
-		ReplicatedStorageService.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
+		var containerType = Type.GetType(envelope.ContainerType);
+		
+		if (containerType == typeof(ReplicatedContainer))
+			ReplicatedStorageService.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
+		if (containerType == typeof(ClientContainer))
+			ClientStorageService.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
 	}
-	private static async Task SendContainerAction(ContainerAction action)
+	public static async Task SendContainerAction(Type containerType, ContainerAction action)
 	{
-		if (Connection != null)
-			await Connection.SendAsync("HandleContainerAction", ContainerActionEnvelope.FromAction(action));
+		if (Connection == null) return;
+		
+		await Connection.SendAsync("HandleContainerAction", 
+			ContainerActionEnvelope.FromAction(containerType, action));
 	}
+	public static async Task SendContainerAction<T>(ContainerAction action) => 
+		await SendContainerAction(typeof(T), action);
 
 }
