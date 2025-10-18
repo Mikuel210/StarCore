@@ -41,11 +41,7 @@ public class ServerHub : Hub
 	private void SendCommand(ServerCommand command) =>
 		Proxy.SendAsync("HandleCommand", CommandEnvelope.FromCommand(command));
 
-	public void HandleContainerAction(ContainerActionEnvelope envelope)
-	{
-		Output.Info($"RECEIVED ACTION: {envelope.ActionType}, {ContainerAction.FromEnvelope(envelope)}");
+	public void HandleContainerAction(ContainerActionEnvelope envelope) => 
 		SDK.Server.HandleContainerAction(ContainerAction.FromEnvelope(envelope));
-	}
-		
 	
 }

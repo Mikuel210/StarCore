@@ -9,16 +9,26 @@ public static class Server
 	public static JsonSerializerOptions JsonSerializerOptions { get; } = new() { PropertyNameCaseInsensitive = true };
 
 	internal static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new(new() {
-		OpenInstances = { new(Guid.NewGuid(), Core.ModuleType.Protocol, "hiiii", "omhg", "asdf", true, false) },
-		ReplicatedString = new("hi")
+		OpenInstances = [],
+		ReplicatedString = new("Replicated string")
 	});
 	
 	public static List<Client> ConnectedClients { get; } = [];
 
 	internal static void Initialize()
 	{
-		Core.InstanceOpened += instance =>
+		Core.InstanceOpened += instance => {
 			ReplicatedStorage.Container.OpenInstances.Add(InstanceData.FromInstance(instance));
+
+			// Listen for changes
+			instance.PropertyChanged += (_, _) => {
+				var index = ReplicatedStorage.Container.OpenInstances
+					.IndexOf(ReplicatedStorage.Container.OpenInstances
+						.First(e => e.InstanceId == instance.InstanceId));
+				
+				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
+			};
+		};
 
 		Core.InstanceClosed += instance =>
 			ReplicatedStorage.Container.OpenInstances
@@ -42,7 +52,6 @@ public static class Server
 		ConnectedClients.RemoveAll(e => e.ConnectionId == connectionId);
 	}
 	
-	// TODO: cleaner
 	public static void HandleContainerAction(ContainerAction action) =>
 		ReplicatedStorage.HandleContainerAction(action);
 

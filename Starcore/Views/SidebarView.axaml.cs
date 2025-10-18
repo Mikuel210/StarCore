@@ -21,7 +21,7 @@ public partial class SidebarView : UserControl
 	private void InstanceButton_OnClick(object? sender, RoutedEventArgs e)
 	{
 		if (sender is Button { DataContext: InstanceData instance })
-			InstanceService.FocusOnInstance(instance);
+			ClientStorageService.FocusOnInstance(instance);
 	}
 
 }

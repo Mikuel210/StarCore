@@ -10,14 +10,16 @@ namespace StarCore.ViewModels;
 public partial class ContentViewModel : ViewModelBase
 {
 
-	[ObservableProperty] private string _title;
+	[ObservableProperty] private string _title = string.Empty;
 
 	public ContentViewModel()
 	{
-		InstanceService.FocusedInstanceUpdated += Update;
+		ReplicatedStorageService.ReplicatedStorage.ContainerUpdated += Update;
+		ClientStorageService.FocusedInstanceChanged += Update;
+		
 		Update();
 	}
 
-	private void Update() => Title = InstanceService.FocusedInstance?.Title ?? string.Empty;
+	private void Update() => Title = ClientStorageService.FocusedInstance?.Title ?? string.Empty;
 
 }

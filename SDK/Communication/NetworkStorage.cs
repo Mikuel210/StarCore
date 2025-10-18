@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace SDK.Communication;
 
@@ -55,8 +54,10 @@ public class NetworkCollection<T> : ObservableCollection<T>, INetworkCollection
 	public NetworkCollection()
 	{
 		CollectionChanged += (sender, e) => {
-			if (_notifyChanges)
-				NetworkCollectionChanged?.Invoke(sender, e);
+			if (!_notifyChanges) return;
+				
+			NetworkCollectionChanged?.Invoke(sender, e);
+			Output.Debug("Collection changed");
 		};	
 	}
 	
@@ -97,35 +98,30 @@ public abstract class Container
 
 	public void Populate(List<Property> properties)
 	{
-		try {
-			foreach (var property in properties) {
-				var propertyName = property.Name;
-				var propertyValue = property.Value;
+		foreach (var property in properties) {
+			var propertyName = property.Name;
+			var propertyValue = property.Value;
 
-				var propertyInfo = GetType().GetProperty(propertyName);
-				if (propertyInfo == null) continue;
+			var propertyInfo = GetType().GetProperty(propertyName);
+			if (propertyInfo == null) continue;
 
-				var propertyType = propertyInfo.PropertyType;
+			var propertyType = propertyInfo.PropertyType;
 
-				// Get value
-				if (propertyValue is JsonElement jsonElement) {
-					if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
-						propertyValue = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
-					else if (propertyType.IsAssignableTo(typeof(INetworkValue))) 
-						propertyValue = jsonElement.Deserialize(propertyType.GenericTypeArguments[0], Server.JsonSerializerOptions);
-				}
-				
-				// Assign value
-				if (propertyType.IsAssignableTo(typeof(INetworkValue))) {
-					var networkValue = (INetworkValue)propertyInfo.GetValue(this)!;
-					networkValue.Value = propertyValue;
-				}
-				else if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
-					propertyInfo.SetValue(this, propertyValue);
+			// Get value
+			if (propertyValue is JsonElement jsonElement) {
+				if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
+					propertyValue = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
+				else if (propertyType.IsAssignableTo(typeof(INetworkValue))) 
+					propertyValue = jsonElement.Deserialize(propertyType.GenericTypeArguments[0], Server.JsonSerializerOptions);
 			}
-		}
-		catch (Exception e) {
-			Output.Error($"EXCEPTION ON POPULATE: {e}");
+			
+			// Assign value
+			if (propertyType.IsAssignableTo(typeof(INetworkValue))) {
+				var networkValue = (INetworkValue)propertyInfo.GetValue(this)!;
+				networkValue.Value = propertyValue;
+			}
+			else if (propertyType.IsAssignableTo(typeof(INetworkCollection)))
+				propertyInfo.SetValue(this, propertyValue);
 		}
 	}
 
@@ -239,6 +235,7 @@ public class NetworkStorage<T> where T : Container
 
 	public T Container { get; }
 	public event Action<ContainerAction>? ContainerChanged;
+	public event Action? ContainerUpdated; // From the other side
 
 	public NetworkStorage(T container)
 	{
@@ -314,6 +311,7 @@ public class NetworkStorage<T> where T : Container
 				case ContainerPostAction postAction:
 					Output.Debug($"Post received, populating: {string.Join(", ", postAction.Properties)}");
 					Container.Populate(postAction.Properties);
+					
 					Output.Debug($"Populated: {string.Join(", ", Container.ToProperties())}");
 					Subscribe(false);
 					
@@ -338,6 +336,9 @@ public class NetworkStorage<T> where T : Container
 				HandleNetworkCollectionAction(networkCollection, action);
 				break;
 		}
+		
+		// Fire container updated
+		ContainerUpdated?.Invoke();
 	}
 
 	private void HandleNetworkValueAction(INetworkValue networkValue, ContainerAction action)
@@ -354,6 +355,8 @@ public class NetworkStorage<T> where T : Container
 	}
 	private void HandleNetworkCollectionAction(INetworkCollection networkCollection, ContainerAction action)
 	{
+		var collectionType = networkCollection.GetType().GenericTypeArguments[0];
+		
 		// Don't notify changes when a network update is processed
 		networkCollection.SetNotifyChanges(false);
 		
@@ -362,10 +365,19 @@ public class NetworkStorage<T> where T : Container
 				throw new InvalidOperationException("Container set action is not supported for network collections");
 			
 			case ContainerAddAction addAction:
-				for (int i = addAction.Values.Count - 1; i >= 0; i--) {
-					int index = addAction.Index + i;
-					networkCollection.Insert(index, addAction.Values[i]);
+				var values = new List<object?>();
+
+				foreach (var value in addAction.Values) {
+					if (value is JsonElement jsonElement)
+						values.Add(jsonElement.Deserialize(collectionType, Server.JsonSerializerOptions));
+					else if (value is IConvertible)
+						values.Add(Convert.ChangeType(value, collectionType));
 				}
+
+				values.Reverse();
+
+				foreach (var value in values)
+					networkCollection.Insert(addAction.Index, value);
 				
 				break;
 			
@@ -378,7 +390,14 @@ public class NetworkStorage<T> where T : Container
 				break;
 			
 			case ContainerReplaceAction replaceAction:
-				networkCollection[replaceAction.Index] = replaceAction.Value;
+				object? value1 = null;
+				
+				if (replaceAction.Value is JsonElement jsonElement1)
+					value1 = jsonElement1.Deserialize(collectionType, Server.JsonSerializerOptions);
+				else if (replaceAction.Value is IConvertible)
+					value1 = Convert.ChangeType(value1, collectionType);
+				
+				networkCollection[replaceAction.Index] = value1;
 				break;
 			
 			case ContainerResetAction:

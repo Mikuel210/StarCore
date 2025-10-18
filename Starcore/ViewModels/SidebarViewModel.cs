@@ -17,7 +17,9 @@ public partial class SidebarViewModel : ViewModelBase
 
 	public SidebarViewModel()
 	{
-		InstanceService.OpenInstancesUpdated += Update;
+		ReplicatedStorageService.ReplicatedStorage.ContainerUpdated += Update;
+		ClientStorageService.FocusedInstanceChanged += Update;
+		
 		Update();
 	}
 
@@ -28,17 +30,18 @@ public partial class SidebarViewModel : ViewModelBase
 			OpenSystems.Clear();
 			OpenProtocols.Clear();
 				
-			InstanceService.OpenInstances
+			ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
 				.Where(e => e.ModuleType == Core.ModuleType.System)
 				.ToList()
 				.ForEach(OpenSystems.Add);
 	
-			InstanceService.OpenInstances
+			ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
 				.Where(e => e.ModuleType == Core.ModuleType.Protocol)
 				.ToList()
 				.ForEach(OpenProtocols.Add);
 		});
 	}
-	public void FocusOnInstance(InstanceData instance) => InstanceService.FocusOnInstance(instance);
+	
+	public void FocusOnInstance(InstanceData instance) => ClientStorageService.FocusOnInstance(instance);
 	
 }
