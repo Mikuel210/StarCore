@@ -27,7 +27,7 @@ public partial class ContentViewModel : ViewModelBase
 		CanClose = ClientStorageService.FocusedInstance?.CanClientClose ?? false;
 		Title = ClientStorageService.FocusedInstance?.Title ?? string.Empty;
 
-		if (!CanClose) ButtonFlyout.FromName("CloseFlyout")?.Hide();
+		if (!CanClose) ButtonFlyout.Hide("CloseFlyout");
 	}
 
 }

@@ -11,11 +11,9 @@ public class ButtonFlyout : Flyout, INamed
 {
 	
 	public string? Name { get; set; }
-	
+
 	private static readonly List<ButtonFlyout> _flyouts = [];
 	public ButtonFlyout() => _flyouts.Add(this);
-
-	public static ButtonFlyout? FromName(string name) => _flyouts.FirstOrDefault(e => e.Name == name);
 	
 	protected override void OnOpened()
 	{
@@ -26,6 +24,11 @@ public class ButtonFlyout : Flyout, INamed
 
 		End:
 		base.OnOpened();
+	}
+	public static void Hide(string name)
+	{
+		_flyouts.Where(e => e.Name == name).ToList().ForEach(e =>
+			Dispatcher.UIThread.Post(e.Hide));
 	}
 
 }
