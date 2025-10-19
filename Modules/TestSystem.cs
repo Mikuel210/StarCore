@@ -12,10 +12,19 @@ public class TestSystem : SystemInstance
 		
 		new Thread(() => {
 			while (true) {
-				Core.GetOpenInstances<TestProtocol>().ForEach(e => e.Title = "Focus on RUNTIME");
+				Core.GetOpenInstances<TestProtocol>().ForEach(e => {
+					e.Title = "Focus on RUNTIME";
+					e.CanClientClose = false;
+				});
+				
 				Thread.Sleep(1_000);
-				Core.GetOpenInstances<TestProtocol>().ForEach(e => e.Title = "Focus on Starkit");
-				Thread.Sleep(1_000);	
+				
+				Core.GetOpenInstances<TestProtocol>().ForEach(e => {
+					e.Title = "Focus on Starkit · EPS.space";
+					e.CanClientClose = true;
+				});
+
+				Thread.Sleep(1_000);
 			}
 		}).Start();
 	}
