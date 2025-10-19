@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SDK.Communication;
+using StarCore.Controls;
 using StarCore.Services;
 
 namespace StarCore.ViewModels;
@@ -23,13 +24,10 @@ public partial class ContentViewModel : ViewModelBase
 
 	private void Update()
 	{
-		var focusedInstanceId = ClientStorageService.ClientStorage.Container.FocusedInstance.Value;
+		CanClose = ClientStorageService.FocusedInstance?.CanClientClose ?? false;
+		Title = ClientStorageService.FocusedInstance?.Title ?? string.Empty;
 
-		var focusedInstance = ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
-			.FirstOrDefault(e => e.InstanceId == focusedInstanceId);
-
-		CanClose = focusedInstance?.CanClientClose ?? false;
-		Title = focusedInstance?.Title ?? string.Empty;	
+		if (!CanClose) ButtonFlyout.FromName("CloseFlyout")?.Hide();
 	}
 
 }

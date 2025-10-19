@@ -16,7 +16,7 @@
           <Button Name="CloseButton" HorizontalAlignment="Right" IsVisible="{Binding CanClose}">
             Close
             <Button.Flyout>
-              <controls:ButtonFlyout>
+              <controls:ButtonFlyout Name="CloseFlyout">
                 <StackPanel>
                   <TextBlock>Are you sure?</TextBlock>
                   <Button Classes="danger"
