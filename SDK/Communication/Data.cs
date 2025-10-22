@@ -1,3 +1,5 @@
+using SDK.Instances;
+
 namespace SDK.Communication;
 
 public record InstanceData(string Module, Guid InstanceId, string Title, bool CanClientClose)
@@ -32,4 +34,15 @@ public record ModuleData(string Module, Core.ModuleType ModuleType, string Modul
 		);	
 	}
 	
+}
+
+public record UiElementData(Guid ElementId, Guid? ParentId, string ElementType, object?[] Properties)
+{
+
+	public static UiElementData FromUiElement(UiElement uiElement)
+	{
+		// TODO
+		return new UiElementData(uiElement.ElementId, null, uiElement.GetType().AssemblyQualifiedName!, new []{});
+	}
+		
 }

@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Text.Json;
 using SDK.Communication;
 using SDK.Helpers;
@@ -30,6 +31,8 @@ public static class Server
 				
 				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
 			};
+
+			instance.InstanceUi.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
 		};
 
 		Core.InstanceClosed += instance =>
@@ -41,6 +44,45 @@ public static class Server
 
 		ReplicatedStorage.ContainerChanged += action =>
 			ConnectedClients.ForEach(e => e.SendContainerAction<ReplicatedContainer>(action));
+	}
+	
+	private static void FetchInstanceUi(Instance instance)
+	{
+		// TODO: This needs a rework
+		// This fetches for all clients which makes no sense
+		// When an instance opens no client will have it open
+		// Clients should request it
+		// Or we could listen for changes to clients' focused instance
+	}
+
+	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
+	{
+		Output.Debug($"UI: {string.Join(", ", instance.InstanceUi)}");
+						
+		switch (args.Action) {
+			case NotifyCollectionChangedAction.Add:
+				// TODO: Update network list, subscribe to children changes of new elements
+				// TODO: when the children change, subscribe to their property changes
+				
+				// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
+				break;
+						
+			case NotifyCollectionChangedAction.Move:
+				// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
+				break;
+						
+			case NotifyCollectionChangedAction.Remove:
+				// action = new ContainerRemoveAction(propertyName, args.OldStartingIndex);
+				break;
+						
+			case NotifyCollectionChangedAction.Replace:
+				// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
+				break;
+						
+			case NotifyCollectionChangedAction.Reset: default:
+				// action = new ContainerResetAction(propertyName);
+				break;
+		}
 	}
 	
 	public static void RegisterClient(Client client)

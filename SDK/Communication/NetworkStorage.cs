@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text.Json;
+using SDK.Instances;
 
 namespace SDK.Communication;
 
@@ -137,6 +138,7 @@ public class ClientContainer : Container
 {
 
 	public NetworkValue<Guid> FocusedInstance { get; } = new();
+	public NetworkCollection<UiElementData> FocusedInstanceUi { get; } = [];
 
 }
 
