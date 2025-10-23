@@ -13,9 +13,6 @@ public class TestProtocol : ProtocolInstance
 		
 		InstanceUi.Add(new TextLabel());
 		((TextLabel)InstanceUi[0]).Text = "hiiii";
-		
-		Output.Debug(UiElementData.FromUiElement(InstanceUi[0]));
-		Output.Debug(UiElementData.FromUiElement(InstanceUi[0]).Properties["Text"]);
 	}
 
 }

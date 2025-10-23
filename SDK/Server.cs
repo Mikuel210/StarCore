@@ -12,6 +12,7 @@ public static class Server
 
 	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
 	public static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
+	private static Dictionary<string, Action> _focusedInstanceChangedHandlers = new();
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	internal static void Initialize()
@@ -46,17 +47,24 @@ public static class Server
 			ConnectedClients.ForEach(e => e.SendContainerAction<ReplicatedContainer>(action));
 	}
 	
-	private static void FetchInstanceUi(Instance instance)
+	private static void FetchInstanceUi(Client client)
 	{
-		// TODO: This needs a rework
-		// This fetches for all clients which makes no sense
-		// When an instance opens no client will have it open
-		// Clients should request it
-		// Or we could listen for changes to clients' focused instance
+		var instanceId = ClientStorage[client.ConnectionId].Container.FocusedInstance.Value;
+		var instance = Instance.FromInstanceId(instanceId)!;
+		var focusedInstanceUi = ClientStorage[client.ConnectionId].Container.FocusedInstanceUi;
+		
+		focusedInstanceUi.Clear();
+			
+		foreach (var data in instance.InstanceUi.Select(UiElementData.FromUiElement))
+			focusedInstanceUi.Add(data);
+		
+		Output.Debug(string.Join(" | ", focusedInstanceUi));
 	}
 
 	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
 	{
+		// This should update the instance UI efficiently for all clients focusing on it
+		
 		Output.Debug($"UI: {string.Join(", ", instance.InstanceUi)}");
 						
 		switch (args.Action) {
@@ -91,15 +99,25 @@ public static class Server
 		ConnectedClients.Add(client);
 		
 		// Create client storage
-		ClientStorage.Add(client.ConnectionId, new());
+		var storage = new NetworkStorage<ClientContainer>();
+		ClientStorage.Add(client.ConnectionId, storage);
+
+		// Subscribe to focused instance changed
+		Action handler = () => FetchInstanceUi(client);
+		_focusedInstanceChangedHandlers.Add(client.ConnectionId, handler);
+		storage.ContainerUpdated += handler;
 	}
 	public static void UnregisterClient(string connectionId)
 	{
 		Output.Info($"Client disconnected: {connectionId}");
 		ConnectedClients.RemoveAll(e => e.ConnectionId == connectionId);
 		
-		// Remove client storage
+		// Remove client storage and unsubscribe from events
+		var handler = _focusedInstanceChangedHandlers[connectionId];
+		ClientStorage[connectionId].ContainerUpdated -= handler; // TODO: idisposable, storage.dispose
+		
 		ClientStorage.Remove(connectionId);
+		_focusedInstanceChangedHandlers.Remove(connectionId);
 	}
 
 }

@@ -12,15 +12,7 @@ public abstract class UiElement : INotifyPropertyChanged
 
 	public Guid ElementId { get; } = Guid.NewGuid();
 
-	public UiElement Parent
-	{
-		get {
-			// TODO: How do you know what instance are you on
-			return null!;
-		}
-		
-		// TODO: Setter
-	}
+	public UiElement? Parent { get; set; }
 
 }
 
@@ -34,7 +26,7 @@ public abstract class TextElement : UiElement
 public abstract class ContainerElement : UiElement
 {
 
-	public ObservableCollection<UiElement> Children { get; set; } = [];
+	// TODO: Children
 
 }
 
