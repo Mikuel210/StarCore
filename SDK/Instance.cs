@@ -13,7 +13,7 @@ public abstract class Instance : INotifyPropertyChanged
 	public Guid InstanceId { get; } = Guid.NewGuid();
 	public string Title { get; set; } = string.Empty;
 
-	public ObservableCollection<UiElement> InstanceUi { get; } = [];
+	public Panel Root { get; } = new();
 
 	public static Instance? FromInstanceId(string instanceId) =>
 		Core.OpenInstances.FirstOrDefault(e => e.InstanceId.ToString() == instanceId);

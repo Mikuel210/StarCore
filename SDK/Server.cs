@@ -33,7 +33,8 @@ public static class Server
 				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
 			};
 
-			instance.InstanceUi.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
+			// TODO: Subscribe to property changes of elements as well
+			instance.Root.children.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
 		};
 
 		Core.InstanceClosed += instance =>
@@ -55,7 +56,7 @@ public static class Server
 		
 		focusedInstanceUi.Clear();
 			
-		foreach (var data in instance.InstanceUi.Select(UiElementData.FromUiElement))
+		foreach (var data in instance.Root.Children.Select(UiElementData.FromUiElement))
 			focusedInstanceUi.Add(data);
 		
 		Output.Debug(string.Join(" | ", focusedInstanceUi));
@@ -63,9 +64,10 @@ public static class Server
 
 	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
 	{
+		// TODO
 		// This should update the instance UI efficiently for all clients focusing on it
 		
-		Output.Debug($"UI: {string.Join(", ", instance.InstanceUi)}");
+		Output.Debug($"UI: {string.Join(", ", instance.Root)}");
 						
 		switch (args.Action) {
 			case NotifyCollectionChangedAction.Add:

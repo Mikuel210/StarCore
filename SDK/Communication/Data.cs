@@ -46,12 +46,16 @@ public record UiElementData(Guid ElementId, Guid? ParentId, string ElementType, 
 
 		foreach (var property in elementType.GetProperties()) {
 			var name = property.Name;
-			var value = property.GetValue(uiElement);
+			if (uiElement is ContainerElement && name == "Children") continue;
 			
+			var value = property.GetValue(uiElement);
 			properties.Add(name, value);
 		}	
 		
 		return new(uiElement.ElementId, uiElement.Parent?.ElementId, elementType.AssemblyQualifiedName!, properties);
 	}
+
+	public List<UiElementData> GetChildren(List<UiElementData> elements) => 
+		elements.Where(e => e.ParentId == ElementId).ToList();
 		
 }
