@@ -53,11 +53,7 @@ public static class Server
 		var focusedInstanceUi = ClientStorage[client.ConnectionId].Container.FocusedInstanceUi;
 		focusedInstanceUi.Clear();
 
-		if (ClientStorage[client.ConnectionId].Container.FocusedInstance.Value is not { } instanceId) {
-			Output.Warning("returning");
-			return;
-		}
-		Output.Warning(instanceId);
+		if (ClientStorage[client.ConnectionId].Container.FocusedInstance.Value is not { } instanceId) return;
 		var instance = Instance.FromInstanceId(instanceId)!;
 		
 		// Recursively add data
@@ -75,40 +71,56 @@ public static class Server
 			currentElements = nextElements;
 			nextElements = [];
 		}
-		
-		Output.Debug(string.Join(" | ", ClientStorage[client.ConnectionId].Container.FocusedInstanceUi));
 	}
 
 	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
 	{
 		// TODO
 		// This should update the instance UI efficiently for all clients focusing on it
+
 		
-		Output.Debug($"UI: {string.Join(", ", instance.Root)}");
+		// Get clients
+		List<string> connectionIds = ClientStorage
+			.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
+			.Select(e => e.Key).ToList();
+
+		foreach (var connectionId in connectionIds) {
+			var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
+			
+			switch (args.Action) {
+				case NotifyCollectionChangedAction.Add:
+					// TODO: Update network list, subscribe to children changes of new elements
+					// TODO: when the children change, subscribe to their property changes
+					// TODO: I should also have in account child index somehow
+
+					foreach (var newElement in args.NewItems!)
+						instanceUi.Add(UiElementData.FromUiElement((UiElement)newElement));
+					
+					// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
+					break;
 						
-		switch (args.Action) {
-			case NotifyCollectionChangedAction.Add:
-				// TODO: Update network list, subscribe to children changes of new elements
-				// TODO: when the children change, subscribe to their property changes
-				
-				// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
-				break;
+				case NotifyCollectionChangedAction.Move:
+					// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
+					break;
 						
-			case NotifyCollectionChangedAction.Move:
-				// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
-				break;
+				case NotifyCollectionChangedAction.Remove:
+					// TODO: Dispose events
+
+					var removedElement = (UiElement)args.OldItems![0]!;
+					var removedElementId = removedElement.ElementId;
+					var data = instanceUi.Single(e => e.ElementId == removedElementId);
+					instanceUi.Remove(data);
+					
+					break;
 						
-			case NotifyCollectionChangedAction.Remove:
-				// action = new ContainerRemoveAction(propertyName, args.OldStartingIndex);
-				break;
+				case NotifyCollectionChangedAction.Replace:
+					// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
+					break;
 						
-			case NotifyCollectionChangedAction.Replace:
-				// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
-				break;
-						
-			case NotifyCollectionChangedAction.Reset: default:
-				// action = new ContainerResetAction(propertyName);
-				break;
+				case NotifyCollectionChangedAction.Reset: default:
+					// action = new ContainerResetAction(propertyName);
+					break;
+			}	
 		}
 	}
 	

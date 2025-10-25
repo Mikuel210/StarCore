@@ -21,7 +21,6 @@ public static class ClientStorageService
 	public static void Initialize()
 	{
 		ClientStorage.ContainerChanged += async action => await SendContainerAction(action);
-		ClientStorage.ContainerChanged += action => Output.Debug($"Action: {(action as ContainerPropertyUpdate)?.PropertyName}");
 		
 		ClientStorage.Container.FocusedInstanceUi.CollectionChanged += (sender, args) => 
 			Dispatcher.UIThread.Post(() => HandleFocusedInstanceUiChanged(sender, args));
@@ -38,18 +37,15 @@ public static class ClientStorageService
 	private static void HandleFocusedInstanceUiChanged(object? sender, NotifyCollectionChangedEventArgs args)
 	{
 		// BUG: Child index is dismissed
-		Output.Debug($"Handle UI change: {args.Action}");
 		
 		switch (args.Action) {
 			case NotifyCollectionChangedAction.Add:
 				foreach (var item in args.NewItems!) {
 					var data = (UiElementData)item;
-					Output.Debug($"ADD: {data}");
 
 					if (data.ParentId is not { } parentId) {
 						if (InstanceUiService.Root is not { } root) continue;
 						root.ElementId = data.ElementId;
-						Output.Debug($"NEW ROOT ID: {root.ElementId}");
 
 						continue;
 					}
@@ -58,8 +54,6 @@ public static class ClientStorageService
 						var control = InstanceUiService.CreateControl(data);
 						var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
 						parent.Children.Add(control);
-
-						Output.Debug($"Parent: {parentId} | Children: {string.Join(", ", parent.Children.Select(e => e.ElementId))}");
 					}
 					catch (Exception e) {
 						Output.Error(e);

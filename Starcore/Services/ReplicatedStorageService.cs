@@ -16,10 +16,6 @@ public static class ReplicatedStorageService
 	{
 		ReplicatedStorage.ContainerChanged += async action => await SendContainerAction(action);
 		ServerService.OnConnected += ReplicatedStorage.Fetch;
-
-		ReplicatedStorage.ContainerUpdated += () => {
-			Output.Debug(string.Join(", ", ReplicatedStorage.Container.OpenInstances));
-		};
 	}
 
 	public static void HandleContainerAction(ContainerAction action)
