@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using SDK;
@@ -49,16 +50,10 @@ public static class ClientStorageService
 
 						continue;
 					}
-
-					try {
-						var control = InstanceUiService.CreateControl(data);
-						var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
-						parent.Children.Add(control);
-					}
-					catch (Exception e) {
-						Output.Error(e);
-					}
 					
+					var control = InstanceUiService.CreateControl(data);
+					var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
+					parent.Children.Add(control);
 				}
 				
 				break;
@@ -67,15 +62,52 @@ public static class ClientStorageService
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
-				var removedElement = (UiElementData)args.OldItems![0]!;
-				var removedControl = InstanceUiService.GetControl(removedElement.ElementId)!;
-				var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)removedElement.ParentId!)!;
+				var removedData = (UiElementData)args.OldItems![0]!;
+				var removedControl = InstanceUiService.GetControl(removedData.ElementId)!;
+				var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)removedData.ParentId!)!;
 				parentControl.Children.Remove(removedControl);
 				
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
-				// TODO
+				// TODO: Two possibilities, the thing got replaced or its properties were changed
+
+				var oldData = (UiElementData)args.OldItems![0]!;
+				var newData = (UiElementData)args.NewItems![0]!;
+
+				if (oldData.ElementId == newData.ElementId) {
+					var control = InstanceUiService.GetControl(oldData.ElementId)!;
+
+					if (oldData.ParentId != newData.ParentId) {
+						if (oldData.ParentId is { } oldParentId) {
+							var oldParent = (UiContainerControl)InstanceUiService.GetControl(oldParentId)!;
+							oldParent.Children.Remove(control);
+						}
+
+						if (newData.ParentId is { } newParentId) {
+							var newParent = (UiContainerControl)InstanceUiService.GetControl(newParentId)!;
+							newParent.Children.Add(control);
+						}
+					}
+
+					if (oldData.Properties == newData.Properties) break;
+
+					foreach (var property in newData.Properties) {
+						var propertyInfo = control.GetType().GetProperty(property.Key)!;
+						if (!propertyInfo.CanWrite) continue;
+
+						var value = property.Value;
+						var propertyType = propertyInfo.PropertyType;
+
+						if (value is JsonElement jsonElement)
+							value = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
+						
+						propertyInfo.SetValue(control, value);
+					}
+				}
+				
+				// TODO: Else...
+				
 				// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
 				break;
 

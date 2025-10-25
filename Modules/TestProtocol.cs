@@ -20,14 +20,18 @@ public class TestProtocol : ProtocolInstance
 		
 		new Thread(() => {
 			while (true) {
+				label.Text = "HI!!";
+				
 				Root.AddChild(new TextLabel("Hi :)"));
 				Thread.Sleep(1000);
+				
+				label.Text = "BYE!!";
 
-				var label = new TextLabel("Omg");
-				Root.AddChild(label);
+				var label1 = new TextLabel("Omg");
+				Root.AddChild(label1);
 				Thread.Sleep(1000);
 				
-				Root.RemoveChild(label);
+				Root.RemoveChild(label1);
 				Thread.Sleep(1000);
 			}
 		}).Start();

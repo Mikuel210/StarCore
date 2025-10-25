@@ -63,6 +63,7 @@ public static class Server
 		while (currentElements.Count > 0) {
 			foreach (var element in currentElements) {
 				focusedInstanceUi.Add(UiElementData.FromUiElement(element));
+				SubscribeToElementUpdates(instance, element);
 				
 				if (element is ContainerElement container)
 					nextElements.AddRange(container.Children);
@@ -71,6 +72,41 @@ public static class Server
 			currentElements = nextElements;
 			nextElements = [];
 		}
+	}
+
+	private static void SubscribeToElementUpdates(Instance instance, UiElement element)
+	{
+		element.PropertyChanged += (_, args) => {
+			List<string> connectionIds = ClientStorage
+				.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
+				.Select(e => e.Key).ToList();
+
+			if (connectionIds.Count == 0) return;
+			
+			var name = args.PropertyName!;
+			var value = element.GetType().GetProperty(name)!.GetValue(element); 
+
+			foreach (var connectionId in connectionIds) {
+				var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
+				var data = instanceUi.Single(e => e.ElementId == element.ElementId);
+				var dataIndex = instanceUi.IndexOf(data);
+
+				if (name == nameof(UiElement.Parent)) {
+					var parentId = (value as ContainerElement)?.ElementId;
+					instanceUi[dataIndex] = data with { ParentId = parentId };
+				}
+				else {
+					var properties = data.Properties;
+					properties[name] = value;
+					
+					instanceUi[dataIndex] = data with { Properties = properties };
+				}
+			}
+
+			if (name == nameof(UiElement.Parent)) {
+				// TODO
+			}
+		};
 	}
 
 	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
