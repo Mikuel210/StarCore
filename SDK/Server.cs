@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.Text.Json;
 using SDK.Communication;
 using SDK.Helpers;
+using SDK.Instances;
 
 namespace SDK;
 
@@ -55,12 +56,22 @@ public static class Server
 		var focusedInstanceUi = ClientStorage[client.ConnectionId].Container.FocusedInstanceUi;
 		
 		focusedInstanceUi.Clear();
-		focusedInstanceUi.Add(UiElementData.FromUiElement(instance.Root));
-			
-		foreach (var data in instance.Root.Children.Select(UiElementData.FromUiElement))
-			focusedInstanceUi.Add(data);
 		
-		// TODO: This doesn't add children of children!!!
+		// Recursively add data
+		List<UiElement> currentElements = [instance.Root];
+		List<UiElement> nextElements = [];
+
+		while (currentElements.Count > 0) {
+			foreach (var element in currentElements) {
+				focusedInstanceUi.Add(UiElementData.FromUiElement(element));
+				
+				if (element is ContainerElement container)
+					nextElements.AddRange(container.Children);
+			}
+
+			currentElements = nextElements;
+			nextElements = [];
+		}
 		
 		Output.Debug(string.Join(" | ", ClientStorage[client.ConnectionId].Container.FocusedInstanceUi));
 	}
