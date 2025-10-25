@@ -7,12 +7,14 @@
              x:Class="StarCore.Controls.UiPanel"
              x:DataType="controls:UiPanel">
   
-  <ItemsControl ItemsSource="{Binding Children}">
-    <ItemsControl.ItemsPanel>
-      <ItemsPanelTemplate>
-        <StackPanel />
-      </ItemsPanelTemplate>
-    </ItemsControl.ItemsPanel>
-  </ItemsControl>
+  <Panel>
+    <ItemsControl ItemsSource="{Binding Children}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
+  </Panel>
   
 </UserControl>

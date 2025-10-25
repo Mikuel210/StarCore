@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using SDK.Communication;
+using StarCore.Controls;
 using StarCore.Services;
 using StarCore.ViewModels;
 

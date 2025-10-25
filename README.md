@@ -1,70 +1,68 @@
 # StarCore
 
-StarCore is an open-sourced framework for building modular intelligent systems.
+**StarCore is an open-sourced framework for building modular, intelligent systems to manage your life.**
 
-## The problem
+Put in other words: It's the coolest and most overkill tool to organize your life you'll ever need.
 
-I lack an external structure that forces me to do the right thing at the right time. I need something that recognizes certain behaviors or responds to certain triggers and performs the right actions intelligently.
+## Project Overview
 
-## The solution
-
-A framework for creating systems and protocols that help you do the right things at the right time.
+StarCore is a framework for building cross-platform systems and protocols that manage different aspects of your life.
+Think of it as a personal operating system and automation engine.
 
 ### Systems
 
-Systems perform actions intelligently. You can interact with them through a self-defined graphic interface. Systems can connect and exchange data with others, providing the flexibility to adapt to external variables.
+Systems are persistent hubs that you code to manage different aspects of your life. Systems manage data and perform 
+actions intelligently. Systems can define a UI for you to interact with, and they can connect and exchange data with others.
+You can create and customize systems to adapt to how you work.
 
-### Protocols
+Imagine a world where:
 
-Protocols perform actions in response to triggers. Multiple instances of the same protocol can be opened at once, and you can interact with each of them through a self-defined graphic interface, similar to systems.
+- Your Task Manager, Calendar System and Project Manager connect to each other and adapt to how you work
+- A Music System gets data about your mood and energy from other systems and plays music accordingly
+- A Filament Tracker automatically tracks your filament usage for each spool
 
-## The software
+...and you can create intelligent systems to manage anything you can imagine
 
-The software provides you with the tools you need to easily create your own systems and protocols:
+### ️Protocols
 
-- An architecture in which a server manages systems and protocols and clients interact with it
-- A cross-platform app for clients to interact with their systems and protocols
-    - An interface that allows you to open systems and protocols, to close protocol instances and to open new ones
-    - An interface for each system and protocol instance in which they define UI elements for users to interact with them
-- A C# framework for creating systems and protocols
-    - A UI framework to interact with the client app
-    - A framework to interact with clients and perform native actions
-    - A framework for data persistence between server restarts
-    - A framework to interact with AI
+Protocols handle temporary actions. They can also define UIs and interact with other systems and protocols. Think of
+them as automations on steroids.
 
-## Usage examples
+Imagine a world where:
 
-### Focus Protocol
+- When you send a print to your 3D printer, a Printing Protocol opens that reminds you to ventilate and logs your 
+filament usage on the Filament Tracker.
+- When you add an exam to your calendar, an Exam Protocol is opened that automatically adds revision tasks to your
+Task Manager.
+- You can open a Focus Protocol that helps you focus on a task, blocks distracting apps and automatically generates 
+journal entries for Hack Club hardware projects.
 
-A protocol for focusing on tasks and projects. The protocol allows me to choose a duration and it displays my goal for the entire session.
+...and you can create intelligent protocols to automate anything you can think of
 
-### Calendar System
+## Why I built this
 
-A system in which I can define events and persistent time blocks which I can relate to my projects. When a time block starts, a new Focus Protocol is automatically opened.
+I lack an external structure that forces me to do the right thing at the right time. I need something that recognizes 
+certain behaviors or responds to certain triggers and performs the right actions intelligently.
 
-### Project Manager
+Of course, I did the sensible thing and over-engineered a cross-platform framework to solve that!
 
-A system in which I can register project ideas and the projects that I'm working on. The Project Manager integrates with the Calendar System so that projects can have time blocks on my calendar.
+Maybe this is not the most efficient way to solve the problem but it for sure is really cool and *interesting* to say
+the least.
 
-### Task System
+## Getting started
 
-A system in which I can define tasks I have to do and give them a do and a due date. I can relate tasks to projects I've defined on the Project Manager. The Focus Protocol allows you to choose a task from the Task System to focus on.
+StarCore is a work in progress and most of the features described above are not available yet. However, you can install
+a proof of concept with a working communication and instance management system from the 
+[Releases tab](https://github.com/Mikuel210/StarCore/releases/latest).
 
-### Capture System
+---
 
-A system for writing down my thoughts. When I add a new entry, an AI decides:
+Made with ❤️ for Moonshot thanks to Hack Club
 
-- If the entry is a project idea, the system registers it as an idea on the Project Manager
-- If the entry is an event, the system adds it to the Calendar System
-- If the entry is a task, the system adds it to the Task System
-
-### Music System
-
-The Music System gets data about my mood (based on the time of the day, open focus protocols, routines, events, etc.) and plays ambient music accordingly.
-
-### Other examples
-
-- When I create an exam event on my calendar, a new Exam Protocol opens which adds revision tasks to the Task System
-- When I send a print to my 3D printer, a new Printing Protocol opens which reminds me to ventilate the area
-- When I'm mindlessly scrolling through YouTube, a protocol opens which blocks it and reminds me to take a break
-- A Decision Protocol recommends an option based on my goals using AI
+<div align="center">
+  <a href="https://moonshot.hackclub.com" target="_blank">
+    <img src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/35ad2be8c916670f3e1ac63c1df04d76a4b337d1_moonshot.png" 
+         alt="This project is part of Moonshot, a 4-day hackathon in Florida visiting Kennedy Space Center and Universal Studios!" 
+         style="width: 100%;">
+  </a>
+</div>
