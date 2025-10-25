@@ -7,7 +7,7 @@ namespace SDK.Instances;
 
 #region Base Classes
 
-public abstract class UiElement : INotifyPropertyChanged
+public abstract class UiElement : INotifyPropertyChanged, IDisposable
 {
 
 	public event PropertyChangedEventHandler? PropertyChanged;
@@ -24,6 +24,8 @@ public abstract class UiElement : INotifyPropertyChanged
 			_parent?.children.Add(this);
 		}
 	}
+
+	public void Dispose() => PropertyChanged = null;
 
 }
 

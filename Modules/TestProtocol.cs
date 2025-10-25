@@ -11,29 +11,18 @@ public class TestProtocol : ProtocolInstance
 	{
 		Output.Info("Hi from test protocol!");
 
-		var label = new TextLabel("Hi :)");
+		Root.AddChild(new TextLabel("1"));
+		
+		var label = new TextLabel("MovingLabel");
 		Root.AddChild(label);
 
 		var panel = new Panel();
-		panel.AddChild(new TextLabel("bye"));
+		panel.AddChild(new TextLabel("2"));
 		Root.AddChild(panel);
 		
 		new Thread(() => {
-			while (true) {
-				label.Text = "HI!!";
-				
-				Root.AddChild(new TextLabel("Hi :)"));
-				Thread.Sleep(1000);
-				
-				label.Text = "BYE!!";
-
-				var label1 = new TextLabel("Omg");
-				Root.AddChild(label1);
-				Thread.Sleep(1000);
-				
-				Root.RemoveChild(label1);
-				Thread.Sleep(1000);
-			}
+			Thread.Sleep(4000);
+			panel.AddChild(label);	
 		}).Start();
 	}
 

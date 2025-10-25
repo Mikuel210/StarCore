@@ -43,17 +43,7 @@ public static class ClientStorageService
 			case NotifyCollectionChangedAction.Add:
 				foreach (var item in args.NewItems!) {
 					var data = (UiElementData)item;
-
-					if (data.ParentId is not { } parentId) {
-						if (InstanceUiService.Root is not { } root) continue;
-						root.ElementId = data.ElementId;
-
-						continue;
-					}
-					
-					var control = InstanceUiService.CreateControl(data);
-					var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
-					parent.Children.Add(control);
+					AddControlFromData(data);
 				}
 				
 				break;
@@ -63,52 +53,52 @@ public static class ClientStorageService
 
 			case NotifyCollectionChangedAction.Remove:
 				var removedData = (UiElementData)args.OldItems![0]!;
-				var removedControl = InstanceUiService.GetControl(removedData.ElementId)!;
-				var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)removedData.ParentId!)!;
-				parentControl.Children.Remove(removedControl);
+				RemoveControlFromData(removedData);
 				
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
-				// TODO: Two possibilities, the thing got replaced or its properties were changed
-
 				var oldData = (UiElementData)args.OldItems![0]!;
 				var newData = (UiElementData)args.NewItems![0]!;
 
-				if (oldData.ElementId == newData.ElementId) {
-					var control = InstanceUiService.GetControl(oldData.ElementId)!;
+				// Element was replaced
+				if (oldData.ElementId != newData.ElementId) {
+					RemoveControlFromData(oldData);
+					AddControlFromData(newData);
 
-					if (oldData.ParentId != newData.ParentId) {
-						if (oldData.ParentId is { } oldParentId) {
-							var oldParent = (UiContainerControl)InstanceUiService.GetControl(oldParentId)!;
-							oldParent.Children.Remove(control);
-						}
-
-						if (newData.ParentId is { } newParentId) {
-							var newParent = (UiContainerControl)InstanceUiService.GetControl(newParentId)!;
-							newParent.Children.Add(control);
-						}
-					}
-
-					if (oldData.Properties == newData.Properties) break;
-
-					foreach (var property in newData.Properties) {
-						var propertyInfo = control.GetType().GetProperty(property.Key)!;
-						if (!propertyInfo.CanWrite) continue;
-
-						var value = property.Value;
-						var propertyType = propertyInfo.PropertyType;
-
-						if (value is JsonElement jsonElement)
-							value = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
-						
-						propertyInfo.SetValue(control, value);
-					}
+					return;
 				}
 				
-				// TODO: Else...
+				// Properties were updated
+				var control = InstanceUiService.GetControl(oldData.ElementId)!;
+
+				if (oldData.ParentId != newData.ParentId) {
+					if (oldData.ParentId is { } oldParentId) {
+						var oldParent = (UiContainerControl)InstanceUiService.GetControl(oldParentId)!;
+						oldParent.Children.Remove(control);
+					}
+
+					if (newData.ParentId is { } newParentId) {
+						var newParent = (UiContainerControl)InstanceUiService.GetControl(newParentId)!;
+						newParent.Children.Add(control);
+					}
+				}
+
+				if (oldData.Properties == newData.Properties) break;
+
+				foreach (var property in newData.Properties) {
+					var propertyInfo = control.GetType().GetProperty(property.Key)!;
+					if (!propertyInfo.CanWrite) continue;
+
+					var value = property.Value;
+					var propertyType = propertyInfo.PropertyType;
+
+					if (value is JsonElement jsonElement)
+						value = jsonElement.Deserialize(propertyType, Server.JsonSerializerOptions);
+					
+					propertyInfo.SetValue(control, value);
+				}
 				
-				// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
 				break;
 
 			case NotifyCollectionChangedAction.Reset:
@@ -116,6 +106,27 @@ public static class ClientStorageService
 				InstanceUiService.Root?.Children.Clear();
 				break;
 		}
+	}
+
+	private static void AddControlFromData(UiElementData data)
+	{
+		if (data.ParentId is not { } parentId) {
+			if (InstanceUiService.Root is not { } root) return;
+			root.ElementId = data.ElementId;
+
+			return;
+		}
+					
+		var control = InstanceUiService.CreateControl(data);
+		var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
+		parent.Children.Add(control);
+	}
+
+	private static void RemoveControlFromData(UiElementData data)
+	{
+		var removedControl = InstanceUiService.GetControl(data.ElementId)!;
+		var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)data.ParentId!)!;
+		parentControl.Children.Remove(removedControl);
 	}
 	
 }

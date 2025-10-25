@@ -62,8 +62,7 @@ public static class Server
 
 		while (currentElements.Count > 0) {
 			foreach (var element in currentElements) {
-				focusedInstanceUi.Add(UiElementData.FromUiElement(element));
-				SubscribeToElementUpdates(instance, element);
+				AddUiElement(focusedInstanceUi, instance, element);
 				
 				if (element is ContainerElement container)
 					nextElements.AddRange(container.Children);
@@ -74,8 +73,54 @@ public static class Server
 		}
 	}
 
-	private static void SubscribeToElementUpdates(Instance instance, UiElement element)
+	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
 	{
+		// Get clients
+		List<string> connectionIds = ClientStorage
+			.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
+			.Select(e => e.Key).ToList();
+
+		foreach (var connectionId in connectionIds) {
+			var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
+			
+			switch (args.Action) {
+				case NotifyCollectionChangedAction.Add:
+					// TODO: Update network list, subscribe to children changes of new elements
+					// TODO: when the children change, subscribe to their property changes
+					// TODO: I should also have in account child index somehow
+
+					foreach (var newElement in args.NewItems!)
+						AddUiElement(instanceUi, instance, (UiElement)newElement);
+					
+					// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
+					break;
+						
+				case NotifyCollectionChangedAction.Move:
+					// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
+					break;
+						
+				case NotifyCollectionChangedAction.Remove:
+					var removedElement = (UiElement)args.OldItems![0]!;
+					RemoveUiElement(instanceUi, removedElement);
+					
+					break;
+						
+				case NotifyCollectionChangedAction.Replace:
+					// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
+					break;
+						
+				case NotifyCollectionChangedAction.Reset: default:
+					// action = new ContainerResetAction(propertyName);
+					break;
+			}	
+		}
+	}
+
+	private static void AddUiElement(NetworkCollection<UiElementData> instanceUi, Instance instance, UiElement element)
+	{
+		instanceUi.Add(UiElementData.FromUiElement(element));
+		
+		// Subscribe to property updates
 		element.PropertyChanged += (_, args) => {
 			List<string> connectionIds = ClientStorage
 				.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
@@ -93,7 +138,10 @@ public static class Server
 
 				if (name == nameof(UiElement.Parent)) {
 					var parentId = (value as ContainerElement)?.ElementId;
-					instanceUi[dataIndex] = data with { ParentId = parentId };
+					RemoveUiElement(instanceUi, element);
+					AddUiElement(instanceUi, instance, element);
+					
+					Output.Debug(string.Join("\n", instanceUi));
 				}
 				else {
 					var properties = data.Properties;
@@ -102,62 +150,16 @@ public static class Server
 					instanceUi[dataIndex] = data with { Properties = properties };
 				}
 			}
-
-			if (name == nameof(UiElement.Parent)) {
-				// TODO
-			}
 		};
 	}
 
-	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
+	private static void RemoveUiElement(NetworkCollection<UiElementData> instanceUi, UiElement element)
 	{
-		// TODO
-		// This should update the instance UI efficiently for all clients focusing on it
-
+		var removedElementId = element.ElementId;
+		var data = instanceUi.Single(e => e.ElementId == removedElementId);
 		
-		// Get clients
-		List<string> connectionIds = ClientStorage
-			.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
-			.Select(e => e.Key).ToList();
-
-		foreach (var connectionId in connectionIds) {
-			var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
-			
-			switch (args.Action) {
-				case NotifyCollectionChangedAction.Add:
-					// TODO: Update network list, subscribe to children changes of new elements
-					// TODO: when the children change, subscribe to their property changes
-					// TODO: I should also have in account child index somehow
-
-					foreach (var newElement in args.NewItems!)
-						instanceUi.Add(UiElementData.FromUiElement((UiElement)newElement));
-					
-					// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
-					break;
-						
-				case NotifyCollectionChangedAction.Move:
-					// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
-					break;
-						
-				case NotifyCollectionChangedAction.Remove:
-					// TODO: Dispose events
-
-					var removedElement = (UiElement)args.OldItems![0]!;
-					var removedElementId = removedElement.ElementId;
-					var data = instanceUi.Single(e => e.ElementId == removedElementId);
-					instanceUi.Remove(data);
-					
-					break;
-						
-				case NotifyCollectionChangedAction.Replace:
-					// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
-					break;
-						
-				case NotifyCollectionChangedAction.Reset: default:
-					// action = new ContainerResetAction(propertyName);
-					break;
-			}	
-		}
+		instanceUi.Remove(data);
+		element.Dispose();
 	}
 	
 	public static void RegisterClient(Client client)
