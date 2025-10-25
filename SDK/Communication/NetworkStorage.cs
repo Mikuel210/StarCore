@@ -239,7 +239,7 @@ public record struct ContainerActionEnvelope(string ContainerType, string Action
 
 #region Storage
 
-public class NetworkStorage<T> where T : Container, new()
+public class NetworkStorage<T> : IDisposable where T : Container, new()
 {
 
 	public T Container { get; }
@@ -417,6 +417,12 @@ public class NetworkStorage<T> where T : Container, new()
 		}
 		
 		networkCollection.SetNotifyChanges(true);
+	}
+
+	public void Dispose()
+	{
+		ContainerChanged = null;
+		ContainerUpdated = null;
 	}
 	
 }

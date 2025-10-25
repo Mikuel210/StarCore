@@ -12,7 +12,6 @@ public static class Server
 
 	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
 	public static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
-	private static Dictionary<string, Action> _focusedInstanceChangedHandlers = new();
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	internal static void Initialize()
@@ -59,7 +58,7 @@ public static class Server
 		foreach (var data in instance.Root.Children.Select(UiElementData.FromUiElement))
 			focusedInstanceUi.Add(data);
 		
-		Output.Debug(string.Join(" | ", focusedInstanceUi));
+		Output.Debug(string.Join(" | ", ClientStorage[client.ConnectionId].Container.FocusedInstanceUi));
 	}
 
 	private static void UpdateInstanceUi(Instance instance, NotifyCollectionChangedEventArgs args)
@@ -103,11 +102,12 @@ public static class Server
 		// Create client storage
 		var storage = new NetworkStorage<ClientContainer>();
 		ClientStorage.Add(client.ConnectionId, storage);
-
+		
+		storage.ContainerChanged += action =>
+			ConnectedClients.ForEach(e => e.SendContainerAction<ClientContainer>(action));
+		
 		// Subscribe to focused instance changed
-		Action handler = () => FetchInstanceUi(client);
-		_focusedInstanceChangedHandlers.Add(client.ConnectionId, handler);
-		storage.ContainerUpdated += handler;
+		storage.ContainerUpdated += () => FetchInstanceUi(client);
 	}
 	public static void UnregisterClient(string connectionId)
 	{
@@ -115,11 +115,8 @@ public static class Server
 		ConnectedClients.RemoveAll(e => e.ConnectionId == connectionId);
 		
 		// Remove client storage and unsubscribe from events
-		var handler = _focusedInstanceChangedHandlers[connectionId];
-		ClientStorage[connectionId].ContainerUpdated -= handler; // TODO: idisposable, storage.dispose
-		
+		ClientStorage[connectionId].Dispose();
 		ClientStorage.Remove(connectionId);
-		_focusedInstanceChangedHandlers.Remove(connectionId);
 	}
 
 }

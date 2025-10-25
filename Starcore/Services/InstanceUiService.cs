@@ -1,4 +1,7 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using Avalonia.Controls;
 using SDK.Communication;
@@ -33,6 +36,18 @@ public static class InstanceUiService
 			controlProperty.SetValue(control, value);
 		}
 
+		if (control.GetType().GetProperty("Children") is { } childrenProperty) {
+			if (childrenProperty.PropertyType != typeof(ObservableCollection<Control>)) goto End;
+
+			var instanceUi = ClientStorageService.ClientStorage.Container.FocusedInstanceUi.ToList();
+			var controls = data.GetChildren(instanceUi).Select(CreateControl).ToList();
+			
+			var controlCollection = (ObservableCollection<Control>)childrenProperty.GetValue(control)!;
+			controlCollection.Clear();
+			controls.ForEach(controlCollection.Add);
+		}
+
+		End:
 		return control;
 	}
 
