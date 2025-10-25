@@ -50,12 +50,15 @@ public static class Server
 	
 	private static void FetchInstanceUi(Client client)
 	{
-		// TODO: This doesn't execute when the client changes its focused instance
-		var instanceId = ClientStorage[client.ConnectionId].Container.FocusedInstance.Value;
-		var instance = Instance.FromInstanceId(instanceId)!;
 		var focusedInstanceUi = ClientStorage[client.ConnectionId].Container.FocusedInstanceUi;
-		
 		focusedInstanceUi.Clear();
+
+		if (ClientStorage[client.ConnectionId].Container.FocusedInstance.Value is not { } instanceId) {
+			Output.Warning("returning");
+			return;
+		}
+		Output.Warning(instanceId);
+		var instance = Instance.FromInstanceId(instanceId)!;
 		
 		// Recursively add data
 		List<UiElement> currentElements = [instance.Root];
@@ -122,6 +125,11 @@ public static class Server
 			ConnectedClients.ForEach(e => e.SendContainerAction<ClientContainer>(action));
 		
 		// Subscribe to focused instance changed
+		storage.ContainerChanged += action => {
+			if (action is ContainerSetAction { PropertyName: nameof(ClientContainer.FocusedInstance) })
+				FetchInstanceUi(client);
+		};
+		
 		storage.ContainerUpdated += () => FetchInstanceUi(client);
 	}
 	public static void UnregisterClient(string connectionId)

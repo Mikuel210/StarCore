@@ -1,9 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using SDK.Communication;
-using StarCore.Controls;
 using StarCore.Services;
 using StarCore.ViewModels;
 
@@ -23,7 +20,7 @@ public partial class ContentView : UserControl
 	private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
 	{
 		var instanceId = ClientStorageService.ClientStorage.Container.FocusedInstance.Value;
-		_ = ServerService.SendCommandAsync(new ClientCloseCommand(instanceId));
+		if (instanceId is { } id) _ = ServerService.SendCommandAsync(new ClientCloseCommand(id));
 	}
 
 }

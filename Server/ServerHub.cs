@@ -45,7 +45,10 @@ public class ServerHub : Hub
 			
 			case ClientCloseCommand closeCommand:
 				var protocolToClose = Instance.FromInstanceId(closeCommand.InstanceId);
-				if (protocolToClose != null) Core.Close(protocolToClose);
+				if (protocolToClose == null) break;
+				
+				SDK.Server.ClientStorage[Context.ConnectionId].Container.FocusedInstance.Value = null;
+				Core.Close(protocolToClose);
 
 				break;
 			

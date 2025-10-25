@@ -14,7 +14,7 @@ public static class ClientStorageService
 {
 	
 	public static NetworkStorage<ClientContainer> ClientStorage { get; } = new();
-	
+
 	public static InstanceData? FocusedInstance => ReplicatedStorageService.ReplicatedStorage.Container.OpenInstances
 		.FirstOrDefault(e => e.InstanceId == ClientStorage.Container.FocusedInstance.Value);
 

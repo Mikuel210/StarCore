@@ -21,23 +21,16 @@ public static class InstanceUiService
 		var elementType = Type.GetType(data.ElementType);
 		if (elementType == null) throw new InvalidOperationException("Invalid UI element data type");
 		
-		Output.Debug($"ELEMENT TYPE: {elementType.Name}");
-		
 		var controlType = GetTypeByName($"Ui{elementType.Name}");
 		if (controlType == null) throw new NotImplementedException($"Control not implemented: Ui{elementType.Name}");
 		
-
 		var control = (UiControl)Activator.CreateInstance(controlType)!;
 		control.ElementId = data.ElementId;
 
 		// Apply properties
 		foreach (var dataProperty in data.Properties) {
-			Output.Info(dataProperty.Key);
-			
 			var controlProperty = control.GetType().GetProperty(dataProperty.Key);
 			if (controlProperty == null || !controlProperty.CanWrite) continue;
-			
-			Output.Info(1);
 
 			var value = dataProperty.Value;
 			var valueType = controlProperty.PropertyType;
@@ -46,14 +39,7 @@ public static class InstanceUiService
 				value = jsonElement.Deserialize(valueType);
 
 			if (value != null && !value.GetType().IsAssignableTo(valueType)) continue;
-			
-			Output.Info(2);
-			Output.Info(value);
-			Output.Info(value.GetType());
-			
 			controlProperty.SetValue(control, value);
-			
-			Output.Info(controlProperty.GetValue(control));
 		}
 
 		// Create children

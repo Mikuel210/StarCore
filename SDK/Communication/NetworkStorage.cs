@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text.Json;
-using SDK.Instances;
 
 namespace SDK.Communication;
 
@@ -30,18 +29,32 @@ public interface INetworkCollection : INetworkProperty, IList
 public class NetworkValue<T>(T value) : INetworkValue
 {
 
-	object? INetworkValue.Value { get; set; } = value;
+	private bool _notifyUpdate = true;
+	private object? _value = value;
+	object? INetworkValue.Value
+	{
+		get => _value;
+
+		set {
+			_value = value;
+			if (_notifyUpdate) ValueUpdated?.Invoke(value);
+		}
+	}
 	public T Value
 	{
 		get => (T)((INetworkValue)this).Value!;
 		
 		set {
+			_notifyUpdate = false;
 			((INetworkValue)this).Value = value;
+			_notifyUpdate = true;
+			
 			ValueChanged?.Invoke(value);
 		}
 	}
 	
 	public event Action<object?>? ValueChanged;
+	public event Action<object?>? ValueUpdated;
 	
 	public NetworkValue() : this(default!) { }
 
@@ -137,7 +150,7 @@ public class ReplicatedContainer : Container
 public class ClientContainer : Container
 {
 
-	public NetworkValue<Guid> FocusedInstance { get; } = new();
+	public NetworkValue<Guid?> FocusedInstance { get; } = new();
 	public NetworkCollection<UiElementData> FocusedInstanceUi { get; } = [];
 
 }
@@ -165,11 +178,10 @@ public abstract record ContainerAction
 			var payloadObject = envelope.Payload[i];
 			
 			if (payloadObject is not JsonElement jsonElement) {
-				if (payloadObject is IConvertible)
-					payload.Add(Convert.ChangeType(payloadObject, parameterType));
-				else
-					payload.Add(payloadObject);
-				
+				payload.Add(payloadObject is IConvertible
+					? Convert.ChangeType(payloadObject, parameterType)
+					: payloadObject);
+
 				continue;
 			}
 			
