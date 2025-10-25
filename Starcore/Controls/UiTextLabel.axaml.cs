@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace StarCore.Controls;
 
-public partial class UiPanel : UiContainerControl
+public partial class UiTextLabel : UiTextControl
 {
-	
-	public UiPanel()
+
+	public UiTextLabel()
 	{
 		InitializeComponent();
 		DataContext = this;

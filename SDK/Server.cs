@@ -49,14 +49,18 @@ public static class Server
 	
 	private static void FetchInstanceUi(Client client)
 	{
+		// TODO: This doesn't execute when the client changes its focused instance
 		var instanceId = ClientStorage[client.ConnectionId].Container.FocusedInstance.Value;
 		var instance = Instance.FromInstanceId(instanceId)!;
 		var focusedInstanceUi = ClientStorage[client.ConnectionId].Container.FocusedInstanceUi;
 		
 		focusedInstanceUi.Clear();
+		focusedInstanceUi.Add(UiElementData.FromUiElement(instance.Root));
 			
 		foreach (var data in instance.Root.Children.Select(UiElementData.FromUiElement))
 			focusedInstanceUi.Add(data);
+		
+		// TODO: This doesn't add children of children!!!
 		
 		Output.Debug(string.Join(" | ", ClientStorage[client.ConnectionId].Container.FocusedInstanceUi));
 	}

@@ -16,6 +16,8 @@ public partial class ContentView : UserControl
 	{
 		InitializeComponent();
 		DataContext = new ContentViewModel();
+
+		InstanceUiService.Root = InstanceUi;
 	}
 
 	private void CloseButton_OnClick(object? sender, RoutedEventArgs e)

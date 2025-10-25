@@ -48,6 +48,7 @@ public record UiElementData(Guid ElementId, Guid? ParentId, string ElementType, 
 			var name = property.Name;
 
 			if (name == nameof(UiElement.Parent)) continue;
+			if (name == nameof(UiElement.ElementId)) continue;
 			if (uiElement is ContainerElement && name == nameof(ContainerElement.Children)) continue;
 			
 			var value = property.GetValue(uiElement);

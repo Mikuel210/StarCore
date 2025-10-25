@@ -3,8 +3,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using SDK;
 using SDK.Communication;
+using StarCore.Controls;
 
 namespace StarCore.Services;
 
@@ -20,7 +22,9 @@ public static class ClientStorageService
 	{
 		ClientStorage.ContainerChanged += async action => await SendContainerAction(action);
 		ClientStorage.ContainerChanged += action => Output.Debug($"Action: {(action as ContainerPropertyUpdate)?.PropertyName}");
-		ClientStorage.Container.FocusedInstanceUi.CollectionChanged += HandleFocusedInstanceUiChanged;
+		
+		ClientStorage.Container.FocusedInstanceUi.CollectionChanged += (sender, args) => 
+			Dispatcher.UIThread.Post(() => HandleFocusedInstanceUiChanged(sender, args));
 	}
 		
 
@@ -33,28 +37,57 @@ public static class ClientStorageService
 	
 	private static void HandleFocusedInstanceUiChanged(object? sender, NotifyCollectionChangedEventArgs args)
 	{
-		Output.Debug($"Im here btw:: {args.Action}");
+		// BUG: Child index is dismissed
+		Output.Debug($"Handle UI change: {args.Action}");
 		
 		switch (args.Action) {
 			case NotifyCollectionChangedAction.Add:
-				// action = new ContainerAddAction(propertyName, args.NewStartingIndex, args.NewItems!);
+				foreach (var item in args.NewItems!) {
+					var data = (UiElementData)item;
+					Output.Debug($"ADD: {data}");
+
+					if (data.ParentId is not { } parentId) {
+						if (InstanceUiService.Root is not { } root) continue;
+						root.ElementId = data.ElementId;
+						Output.Debug($"NEW ROOT ID: {root.ElementId}");
+
+						continue;
+					}
+
+					try {
+						var control = InstanceUiService.CreateControl(data);
+						var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
+						parent.Children.Add(control);
+
+						Output.Debug($"Parent: {parentId} | Children: {string.Join(", ", parent.Children.Select(e => e.ElementId))}");
+					}
+					catch (Exception e) {
+						Output.Error(e);
+					}
+					
+				}
+				
 				break;
 
 			case NotifyCollectionChangedAction.Move:
-				// action = new ContainerMoveAction(propertyName, args.OldStartingIndex, args.NewStartingIndex);
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
-				// action = new ContainerRemoveAction(propertyName, args.OldStartingIndex);
+				var removedElement = (UiElementData)args.OldItems![0]!;
+				var removedControl = InstanceUiService.GetControl(removedElement.ElementId)!;
+				var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)removedElement.ParentId!)!;
+				parentControl.Children.Remove(removedControl);
+				
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
+				// TODO
 				// action = new ContainerReplaceAction(propertyName, args.OldStartingIndex, args.NewItems![0]);
 				break;
 
 			case NotifyCollectionChangedAction.Reset:
 			default:
-				// action = new ContainerResetAction(propertyName);
+				InstanceUiService.Root?.Children.Clear();
 				break;
 		}
 	}
