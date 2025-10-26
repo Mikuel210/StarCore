@@ -1,17 +1,17 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using SDK.Instances;
 
 namespace StarCore.Controls;
 
-public partial class UiButton : UiTextControl
+public partial class UiCheckbox : UiTextControl
 {
+	
+	public bool IsChecked { get; set; }
 
-	public UiButton()
+	public UiCheckbox()
 	{
 		InitializeComponent();
-		DataContext = this;
 	}
 
 }

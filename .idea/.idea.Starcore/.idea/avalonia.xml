@@ -9,6 +9,8 @@
         <entry key="StarCore/Views/MainWindow.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
         <entry key="StarCore/Views/SidebarView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
         <entry key="Starcore/App.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="Starcore/Controls/UiButton.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
+        <entry key="Starcore/Controls/UiCheckbox.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
         <entry key="Starcore/Controls/UiPanel.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
         <entry key="Starcore/Controls/UiTextLabel.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />
         <entry key="Starcore/Views/ContentView.axaml" value="StarCore.Browser/StarCore.Browser.csproj" />

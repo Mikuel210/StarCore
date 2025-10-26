@@ -13,6 +13,7 @@ public static class Server
 
 	public static NetworkStorage<ReplicatedContainer> ReplicatedStorage { get; } = new();
 	public static Dictionary<string, NetworkStorage<ClientContainer>> ClientStorage { get; } = new();
+	private static List<Guid> _subscribedElements = [];
 	public static List<Client> ConnectedClients { get; } = [];
 	
 	internal static void Initialize()
@@ -118,6 +119,9 @@ public static class Server
 		instanceUi.Add(UiElementData.FromUiElement(element));
 		
 		// Subscribe to updates
+		if (_subscribedElements.Contains(element.ElementId)) return;
+		_subscribedElements.Add(element.ElementId);
+		
 		if (element is ContainerElement container)
 			container.children.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
 		
@@ -135,7 +139,7 @@ public static class Server
 
 			foreach (var connectionId in connectionIds) {
 				var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
-				var data = instanceUi.Single(e => e.ElementId == element.ElementId);
+				var data = instanceUi.First(e => e.ElementId == element.ElementId);
 				var dataIndex = instanceUi.IndexOf(data);
 				
 				var properties = data.Properties;
@@ -149,11 +153,11 @@ public static class Server
 	private static void RemoveUiElement(NetworkCollection<UiElementData> instanceUi, UiElement element)
 	{
 		var removedElementId = element.ElementId;
-		var data = instanceUi.SingleOrDefault(e => e.ElementId == removedElementId);
-		if (data == null) return;
+		var data = instanceUi.Where(e => e.ElementId == removedElementId);
 		
-		instanceUi.Remove(data);
+		data.ToList().ForEach(e => instanceUi.Remove(e));
 		element.Dispose();
+		_subscribedElements.Remove(element.ElementId);
 	}
 	
 	public static void RegisterClient(Client client)

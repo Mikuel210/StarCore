@@ -18,7 +18,7 @@ public class TestProtocol : ProtocolInstance
 
 		var panel2 = new Panel();
 		panel2.AddChild(new TextLabel("2"));
-		var label = new Button("MovingLabel");
+		var label = new Checkbox("MovingLabel");
 		panel2.AddChild(label);
 		Root.AddChild(panel2);
 		
@@ -35,8 +35,10 @@ public class TestProtocol : ProtocolInstance
 			while (true) {
 				Thread.Sleep(3000);
 				label.Parent = panel1;
+				label.IsChecked = false;
 				Thread.Sleep(3000);
 				label.Parent = panel2;
+				label.IsChecked = true;
 			}
 		}).Start();
 	}

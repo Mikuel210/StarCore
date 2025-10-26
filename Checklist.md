@@ -14,6 +14,7 @@
     - [x] Switch to root!
     - [x] Children as IReadOnlyList, have AddChild API etc.
     - [x] Match to controls on client
+    - [/] BUG: Switching instances is buggy w current test protocol
     - [/] More controls
     - [ ] Support children ordering
     - [ ] XML support
@@ -22,4 +23,5 @@
 - [ ] Audio system
 - [ ] Efficient-ify and highlight instance list
 - [ ] Handle client disconnection etc. And server switching
+- [?] Default separate thread for Instances
 - [ ] https://github.com/wieslawsoltes/Dock/blob/master/docs/quick-start.md

@@ -13,19 +13,21 @@ The UI framework for StarCore
     - Option
 - TextElement
   - [x] TextLabel
-  - [/] Button
+  - [x] Button
   - [ ] Input
     - [ ] Text
     - [ ] Number
     - [ ] DateTime
-  - [ ] Checkbox
+  - [/] Checkbox
   - [ ] Select (radio)
     - Option
 - [ ] ImageLabel
 - [ ] ProgressBar
 - [ ] Calendar
 
-## Colors
+## [ ] Events
+
+## [ ] Colors
 
 https://getbootstrap.com/docs/5.3/utilities/colors/
 

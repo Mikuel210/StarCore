@@ -46,12 +46,6 @@ public abstract class TextElement(string text = "") : UiElement
 
 }
 
-public interface IUiColor
-{
-
-	UiColor Color { get; set; }
-
-}
 public enum UiColor
 {
 
@@ -72,11 +66,11 @@ public enum UiColor
 public class Panel : ContainerElement;
 
 public class TextLabel(string text = "") : TextElement(text);
-
-public class Button(string text = "", UiColor color = UiColor.accent) : TextElement(text), IUiColor
+public class Button(string text = "") : TextElement(text);
+public class Checkbox(string text = "", bool isChecked = false) : TextElement(text)
 {
 
-	public UiColor Color { get; set; } = color;
+	public bool IsChecked { get; set; } = isChecked;
 
 }
 
