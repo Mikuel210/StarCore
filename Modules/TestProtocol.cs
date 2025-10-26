@@ -13,16 +13,29 @@ public class TestProtocol : ProtocolInstance
 
 		Root.AddChild(new TextLabel("1"));
 		
-		var label = new TextLabel("MovingLabel");
-		Root.AddChild(label);
-
 		var panel = new Panel();
 		panel.AddChild(new TextLabel("2"));
 		Root.AddChild(panel);
 		
+		var label = new TextLabel("MovingLabel");
+		panel.AddChild(label);
+		
 		new Thread(() => {
-			Thread.Sleep(4000);
-			panel.AddChild(label);	
+			/*new Thread(() => {
+				while (true) {
+					label.Text = "MovingLabel";
+					Thread.Sleep(750);
+					label.Text = "I'm moving btw";
+					Thread.Sleep(750);
+				}
+			}).Start();*/
+			
+			while (true) {
+				Thread.Sleep(3000);
+				label.Parent = Root;
+				Thread.Sleep(3000);
+				label.Parent = panel;
+			}
 		}).Start();
 	}
 

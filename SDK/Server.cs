@@ -32,9 +32,6 @@ public static class Server
 				
 				ReplicatedStorage.Container.OpenInstances[index] = InstanceData.FromInstance(instance);
 			};
-
-			// TODO: Subscribe to property changes of elements as well
-			instance.Root.children.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
 		};
 
 		Core.InstanceClosed += instance =>
@@ -120,7 +117,10 @@ public static class Server
 	{
 		instanceUi.Add(UiElementData.FromUiElement(element));
 		
-		// Subscribe to property updates
+		// Subscribe to updates
+		if (element is ContainerElement container)
+			container.children.CollectionChanged += (_, e) => UpdateInstanceUi(instance, e);
+		
 		element.PropertyChanged += (_, args) => {
 			List<string> connectionIds = ClientStorage
 				.Where(e => e.Value.Container.FocusedInstance.Value == instance.InstanceId)
@@ -129,26 +129,19 @@ public static class Server
 			if (connectionIds.Count == 0) return;
 			
 			var name = args.PropertyName!;
+			if (name == nameof(UiElement.Parent)) return;
+			
 			var value = element.GetType().GetProperty(name)!.GetValue(element); 
 
 			foreach (var connectionId in connectionIds) {
 				var instanceUi = ClientStorage[connectionId].Container.FocusedInstanceUi;
 				var data = instanceUi.Single(e => e.ElementId == element.ElementId);
 				var dataIndex = instanceUi.IndexOf(data);
-
-				if (name == nameof(UiElement.Parent)) {
-					var parentId = (value as ContainerElement)?.ElementId;
-					RemoveUiElement(instanceUi, element);
-					AddUiElement(instanceUi, instance, element);
+				
+				var properties = data.Properties;
+				properties[name] = value;
 					
-					Output.Debug(string.Join("\n", instanceUi));
-				}
-				else {
-					var properties = data.Properties;
-					properties[name] = value;
-					
-					instanceUi[dataIndex] = data with { Properties = properties };
-				}
+				instanceUi[dataIndex] = data with { Properties = properties };
 			}
 		};
 	}
