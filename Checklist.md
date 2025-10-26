@@ -13,7 +13,13 @@
         - [-] On InstanceUI.Add element: Set their Instance!!!
     - [x] Switch to root!
     - [x] Children as IReadOnlyList, have AddChild API etc.
-    - [ ] Match to controls on client
-    - [ ] Better API!!!
+    - [x] Match to controls on client
+    - [/] More controls
+    - [ ] Support children ordering
+    - [ ] XML support
+    - [ ] Better API
+- [ ] Serialization framework
+- [ ] Audio system
+- [ ] Efficient-ify and highlight instance list
 - [ ] Handle client disconnection etc. And server switching
 - [ ] https://github.com/wieslawsoltes/Dock/blob/master/docs/quick-start.md

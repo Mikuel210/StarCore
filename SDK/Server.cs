@@ -149,7 +149,8 @@ public static class Server
 	private static void RemoveUiElement(NetworkCollection<UiElementData> instanceUi, UiElement element)
 	{
 		var removedElementId = element.ElementId;
-		var data = instanceUi.Single(e => e.ElementId == removedElementId);
+		var data = instanceUi.SingleOrDefault(e => e.ElementId == removedElementId);
+		if (data == null) return;
 		
 		instanceUi.Remove(data);
 		element.Dispose();

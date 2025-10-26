@@ -28,7 +28,6 @@ public abstract class UiElement : INotifyPropertyChanged, IDisposable
 	public void Dispose() => PropertyChanged = null;
 
 }
-
 public abstract class ContainerElement : UiElement
 {
 
@@ -40,11 +39,29 @@ public abstract class ContainerElement : UiElement
 	public void RemoveChild(UiElement child) => child.Parent = null;
 
 }
-
 public abstract class TextElement(string text = "") : UiElement
 {
 
 	public string Text { get; set; } = text;
+
+}
+
+public interface IUiColor
+{
+
+	UiColor Color { get; set; }
+
+}
+public enum UiColor
+{
+
+	accent,
+	Secondary,
+	Light,
+	Success,
+	Warning,
+	Danger,
+	Info
 
 }
 
@@ -55,5 +72,12 @@ public abstract class TextElement(string text = "") : UiElement
 public class Panel : ContainerElement;
 
 public class TextLabel(string text = "") : TextElement(text);
+
+public class Button(string text = "", UiColor color = UiColor.accent) : TextElement(text), IUiColor
+{
+
+	public UiColor Color { get; set; } = color;
+
+}
 
 #endregion

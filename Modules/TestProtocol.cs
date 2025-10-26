@@ -18,7 +18,7 @@ public class TestProtocol : ProtocolInstance
 
 		var panel2 = new Panel();
 		panel2.AddChild(new TextLabel("2"));
-		var label = new TextLabel("MovingLabel");
+		var label = new Button("MovingLabel");
 		panel2.AddChild(label);
 		Root.AddChild(panel2);
 		

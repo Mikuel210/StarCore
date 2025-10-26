@@ -42,9 +42,7 @@ public static class ClientStorageService
 		switch (args.Action) {
 			case NotifyCollectionChangedAction.Add:
 				foreach (var item in args.NewItems!) {
-					Output.Debug("ADD");
 					var data = (UiElementData)item;
-					Output.Debug("parent:: "+data.ParentId);
 					AddControlFromData(data);
 				}
 				
@@ -54,7 +52,6 @@ public static class ClientStorageService
 				break;
 
 			case NotifyCollectionChangedAction.Remove:
-				Output.Debug("REMOVE");
 				var removedData = (UiElementData)args.OldItems![0]!;
 				RemoveControlFromData(removedData);
 				
@@ -110,7 +107,6 @@ public static class ClientStorageService
 		var control = InstanceUiService.CreateControl(data);
 		var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
 		parent.Children.Add(control);
-		Output.Debug($"NEW PARENT CHILDREN: {string.Join(", ", parent.Children.Select(e => $"{e.GetType().Name}, {(e as UiTextControl)?.Text} | "))}");
 	}
 
 	private static void RemoveControlFromData(UiElementData data)
@@ -118,7 +114,6 @@ public static class ClientStorageService
 		var removedControl = InstanceUiService.GetControl(data.ElementId)!;
 		var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)data.ParentId!)!;
 		parentControl.Children.Remove(removedControl);
-		Output.Debug($"OLD PARENT CHILDREN: {string.Join(", ", parentControl.Children.Select(e => $"{e.GetType().Name}, {(e as UiTextControl)?.Text} | "))}");
 	}
 	
 }
