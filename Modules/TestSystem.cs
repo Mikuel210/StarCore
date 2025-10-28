@@ -1,32 +1,16 @@
 ﻿using SDK;
+using SDK.Instances;
 
 namespace Modules;
 
-[ModuleDescription("A system for testing multiline descriptions. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.")]
 public class TestSystem : SystemInstance
 {
 
 	public override void Open()
 	{
-		Output.Info("Hi from test system!");
-		
-		new Thread(() => {
-			while (true) {
-				Core.GetOpenInstances<TestProtocol>().ForEach(e => {
-					e.Title = "Focus on RUNTIME";
-					e.CanClientClose = false;
-				});
-				
-				Thread.Sleep(1_000);
-				
-				Core.GetOpenInstances<TestProtocol>().ForEach(e => {
-					e.Title = "Focus on Starkit · EPS.space";
-					e.CanClientClose = true;
-				});
-
-				Thread.Sleep(1_000);
-			}
-		}).Start();
+		Root.AddChild(new TextLabel("Welcome to StarCore! Connection to the server is successful, all systems nominal"));
+		Root.AddChild(new TextLabel("This is a test system and you're seeing some UI elements that it's defined"));
+		Root.AddChild(new TextLabel("Go ahead and open a protocol from the \"open\" dropdown"));
 	}
 
 }

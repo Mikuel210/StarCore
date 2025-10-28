@@ -20,8 +20,19 @@ public static class ReplicatedStorageService
 
 	public static void HandleContainerAction(ContainerAction action)
 	{
+		if (action is ContainerRemoveAction remove && 
+			remove.PropertyName == nameof(ReplicatedContainer.OpenInstances)) {
+			
+			var instance = ReplicatedStorage.Container.OpenInstances[remove.Index];
+
+			if (instance.InstanceId == ClientStorageService.ClientStorage.Container.FocusedInstance.Value)
+				ClientStorageService.ClientStorage.Container.FocusedInstance.Value = null;
+		}
+		
 		ReplicatedStorage.HandleContainerAction(action);
-		if (action is ContainerPostAction) PostReceived?.Invoke();
+
+		if (action is not ContainerPostAction) return;
+		PostReceived?.Invoke();
 	}
 	private static async Task SendContainerAction(ContainerAction action) =>
 		await ServerService.SendContainerAction<ReplicatedContainer>(action);

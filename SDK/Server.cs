@@ -35,12 +35,13 @@ public static class Server
 			};
 		};
 
-		Core.InstanceClosed += instance =>
+		Core.InstanceClosed += instance => {
 			ReplicatedStorage.Container.OpenInstances
 				.RemoveAt(ReplicatedStorage.Container.OpenInstances
 					.Where(e => e.InstanceId == instance.InstanceId)
 					.Select(ReplicatedStorage.Container.OpenInstances.IndexOf)
 					.Single());
+		};
 
 		ReplicatedStorage.ContainerChanged += action =>
 			ConnectedClients.ForEach(e => e.SendContainerAction<ReplicatedContainer>(action));

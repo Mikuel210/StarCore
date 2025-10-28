@@ -9,7 +9,7 @@ public static class Core
 {
 	public static List<Type> Modules { get; private set; } = [];
 	public static List<Instance> OpenInstances { get; } = [];
-
+	
 	internal static event Action? ModulesLoaded;
 	public static event Action<Instance>? InstanceOpened;
 	public static event Action<Instance>? InstanceClosed;
@@ -81,13 +81,14 @@ public static class Core
 		instance.Title = moduleName;
 		
 		// Open instance
-		try { instance.Open(); }
-		catch (Exception e) { Output.Error($"An exception was thrown when opening a {moduleName}: {e}"); }
-		
+		Output.Info($"A new {moduleName} instance has been opened");
 		OpenInstances.Add(instance);
 		InstanceOpened?.Invoke(instance);
-		
-		Output.Info($"A new {moduleName} instance has been opened");
+
+		Task.Run(() => {
+			try { instance.Open(); }
+			catch (Exception e) { Output.Error($"An exception was thrown when opening a {moduleName}: {e}"); }
+		});
 	}
 	public static Instance Open(Type module)
 	{
@@ -143,17 +144,24 @@ public static class Core
 	{
 		var moduleName = GetModuleName(instance);
 		
+		if (!OpenInstances.Contains(instance)) {
+			Output.Warning($"Attempted to close a closed protocol: {moduleName}");
+			return;
+		}
+		
 		if (instance is not ProtocolInstance protocol) {
 			Output.Warning($"Attempted to close a system instance: {moduleName}");
 			return;
 		}
 		
 		// Close protocol
-		try { protocol.Close(); }
-		catch (Exception e) { Output.Error($"An exception was thrown when closing a {moduleName}: {e}"); }
-		
 		OpenInstances.Remove(instance);
 		InstanceClosed?.Invoke(instance);
+
+		Task.Run(() => {
+			try { protocol.Close(); }
+			catch (Exception e) { Output.Error($"An exception was thrown when closing a {moduleName}: {e}"); }
+		});
 	}
 	
 	#endregion

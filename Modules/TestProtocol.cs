@@ -9,6 +9,28 @@ public class TestProtocol : ProtocolInstance
 
 	public override void Open()
 	{
+		Root.AddChild(new TextLabel("This is an automation. I can define UI elements, perform native actions and interact with the framework"));
+
+		var label = new TextLabel();
+		Root.AddChild(label);
+		
+		for (int i = 10; i > 0; i--) {
+			label.Text = $"I will close myself in {i} seconds...";
+			Thread.Sleep(1000);
+		}
+		
+		Core.Close(this);
+	}
+
+}
+
+
+/*
+public class TestProtocol : ProtocolInstance
+{
+
+	public override void Open()
+	{
 		Output.Info("Hi from test protocol!");
 
 		
@@ -44,3 +66,4 @@ public class TestProtocol : ProtocolInstance
 	}
 
 }
+*/

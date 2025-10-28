@@ -7,10 +7,6 @@
              x:Class="StarCore.Controls.UiCheckbox"
              x:DataType="controls:UiCheckbox">
   
-  <Panel>
-    <CheckBox Content="{Binding Text}" IsChecked="{Binding IsChecked}" />
-    <TextBlock Text="{Binding Text}"/>
-    <TextBlock Text="{Binding IsChecked}"/>
-  </Panel>
+  <TextBlock Text="{Binding Text}"/>
   
 </UserControl>
