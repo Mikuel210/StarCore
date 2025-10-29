@@ -7,6 +7,6 @@
              x:Class="StarCore.Controls.UiTextLabel"
              x:DataType="controls:UiTextLabel">
   
-  <TextBlock Text="{Binding Text}"/>
+  <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
   
 </UserControl>

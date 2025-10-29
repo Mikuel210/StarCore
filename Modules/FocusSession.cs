@@ -24,16 +24,21 @@ public class FocusSession : ProtocolInstance
 	{
 		var elapsed = DateTime.Now - _startTime;
 		var timeLeft = _duration - elapsed;
-		_timeLabel!.Text = $"Time left: {timeLeft:g}";
+		
+		if (timeLeft > TimeSpan.Zero) {
+			_timeLabel!.Text = $"Time left: {timeLeft:g}";
+			return;
+		}
+		
+		Core.Close(this);
+	}
 
-		if (timeLeft > TimeSpan.Zero) return;
-
+	public override void Close()
+	{
 		foreach (var client in Server.ConnectedClients) {
 			if (client is not INotificationCapability notificationClient) continue;
 			notificationClient.ShowNotification("Focus session ended", "Take a break now");
 		}
-		
-		Core.Close(this);
 	}
 
 }
