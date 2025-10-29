@@ -49,7 +49,7 @@ public abstract class TextElement(string text = "") : UiElement
 public enum UiColor
 {
 
-	accent,
+	Accent,
 	Secondary,
 	Light,
 	Success,

@@ -15,7 +15,7 @@
                 <!-- Header -->
                 <Panel Margin="0 0 0 20">
                     <TextBlock FontSize="25" FontWeight="SemiBold" VerticalAlignment="Center">StarCore</TextBlock>
-                    <Button Classes="accent" HorizontalAlignment="Right">
+                    <Button Classes="Accent" HorizontalAlignment="Right">
                         Open
                         <Button.Flyout>
                             <controls:ButtonFlyout>

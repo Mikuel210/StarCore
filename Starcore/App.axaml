@@ -22,14 +22,25 @@
         </Style>
         
         <!-- Define button colors -->
-        <Style Selector="Button.danger">
+        <Style Selector="Button.Accent">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#5a7dff"/>
+        </Style>
+        <Style Selector="Button.Accent:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#4f6fe3"/>
+        </Style>
+        <Style Selector="Button.Accent:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#374fa3"/>
+        </Style>
+        
+        <Style Selector="Button.Danger">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#C62828"/>
         </Style>
-        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+        <Style Selector="Button.Danger:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="#B71C1C"/>
         </Style>
-        <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+        <Style Selector="Button.Danger:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="#8E0000"/>
         </Style>
     </Application.Styles>

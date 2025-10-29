@@ -1,8 +1,12 @@
-# StarCore
+![StarCore Logo](Images/StarCore.png)
 
 **StarCore is an open-sourced framework for building systems and protocols to organize your life.**
 
-Put in other words: It's the coolest and most overkill tool to organize your life you'll ever need.
+Put in other words: It's the coolest and most overkill tool to organize and automate your life you'll ever need.
+
+![StarCore Screenshot](Images/Screenshot.png)
+
+*Screenshot of StarCore Proof of Concept*
 
 ## Project Overview
 
@@ -25,8 +29,8 @@ Imagine a world where:
 
 ### ⚙️ ️Protocols
 
-Protocols handle temporary actions. They can also define UIs and interact with other systems and protocols. Think of
-them as automations on steroids.
+Protocols are interactive automations that handle temporary actions. They can also define UIs, perform native actions 
+and interact with other systems and protocols.
 
 Imagine a world where:
 

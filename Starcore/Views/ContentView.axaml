@@ -19,7 +19,7 @@
               <controls:ButtonFlyout Name="CloseFlyout">
                 <StackPanel>
                   <TextBlock>Are you sure?</TextBlock>
-                  <Button Classes="danger"
+                  <Button Classes="Danger"
                           HorizontalAlignment="Stretch"
                           Margin="0 10 0 0"
                           Click="CloseButton_OnClick">Close</Button>

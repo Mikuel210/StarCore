@@ -3,7 +3,7 @@ using SDK.Communication;
 
 namespace SDK;
 
-public abstract class Client(string connectionId, IClientProxy proxy) : INotificationCapability
+public abstract class Client(string connectionId, IClientProxy proxy)
 {
 	
 	public string ConnectionId { get; } = connectionId;
