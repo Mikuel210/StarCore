@@ -103,8 +103,6 @@ public static class ClientStorageService
 
 			return;
 		}
-		
-		Output.Debug($"ADD: {data} | {string.Join(", ", data.Properties)}");
 					
 		var control = InstanceUiService.CreateControl(data);
 		var parent = (UiContainerControl)InstanceUiService.GetControl(parentId)!;
@@ -113,8 +111,6 @@ public static class ClientStorageService
 
 	private static void RemoveControlFromData(UiElementData data)
 	{
-		Output.Debug($"REMOVE: {data} | {string.Join(", ", data.Properties)}");
-		
 		var removedControl = InstanceUiService.GetControl(data.ElementId)!;
 		var parentControl = (UiContainerControl)InstanceUiService.GetControl((Guid)data.ParentId!)!;
 		parentControl.Children.Remove(removedControl);

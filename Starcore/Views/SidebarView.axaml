@@ -24,6 +24,7 @@
                                         <DataTemplate>
                                             <Button Content="{Binding ModuleName}" 
                                                     HorizontalAlignment="Stretch"
+                                                    Margin="0 2 0 2"
                                                     Click="ProtocolButton_OnClick"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -41,7 +42,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button HorizontalAlignment="Stretch" 
-                                            Margin="0 5 0 5"
+                                            Margin="0 2 0 2"
                                             Content="{Binding Title}" 
                                             Click="InstanceButton_OnClick"/>
                                 </DataTemplate>
@@ -58,7 +59,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button HorizontalAlignment="Stretch"
-                                            Margin="0 5 0 5"
+                                            Margin="0 2 0 2"
                                             Content="{Binding Title}" 
                                             Click="InstanceButton_OnClick"/>
                                 </DataTemplate>

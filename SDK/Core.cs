@@ -86,6 +86,8 @@ public static class Core
 			while (OpenInstances.Contains(instance)) {
 				try { instance.Loop(); }
 				catch (Exception e) { Output.Error($"An exception was thrown when looping a {moduleName}: {e}"); }
+				
+				Thread.Sleep(1);
 			}
 		});
 	}
