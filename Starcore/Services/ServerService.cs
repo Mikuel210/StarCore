@@ -10,8 +10,8 @@ namespace StarCore.Services;
 
 public static class ServerService
 {
-	
-	public static HubConnection? Connection { get; private set; }
+
+	private static HubConnection? Connection { get; set; }
 	public static event Action? OnConnected;
 	
 	public static async Task ConnectAsync(string url)
@@ -30,16 +30,6 @@ public static class ServerService
 		
 		// Start connection
 		await Connection.StartAsync();
-		
-		// Send connection request
-		Type clientType = typeof(DesktopClient);
-		if (OperatingSystem.IsBrowser()) clientType = typeof(BrowserClient);
-		if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()) clientType = typeof(MobileClient);
-
-		await SendCommandAsync(new ClientConnectCommand(clientType.AssemblyQualifiedName!));
-		
-		// Invoke event
-		OnConnected?.Invoke();
 	}
 	public static async Task DisconnectAsync()
 	{
@@ -47,12 +37,24 @@ public static class ServerService
 			await Connection.StopAsync();	
 	}
 	
-	private static void HandleCommand(CommandEnvelope envelope)
+	private static async Task HandleCommand(CommandEnvelope envelope)
 	{
 		var command = ServerCommand.FromEnvelope(envelope);
 		Output.Info($"Command received from server: {command}");
 		
 		switch (command) {
+			case ServerConnectCommand:
+				// Send connection request
+				Type clientType = typeof(DesktopClient);
+				if (OperatingSystem.IsBrowser()) clientType = typeof(BrowserClient);
+				if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()) clientType = typeof(MobileClient);
+
+				await SendCommandAsync(new ClientConnectCommand(clientType.AssemblyQualifiedName!));
+		
+				// Invoke event
+				OnConnected?.Invoke();
+				break;
+			
 			default:
 				Output.Error($"Command not implemented: {command.GetType().Name}");
 				break;

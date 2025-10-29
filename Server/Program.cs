@@ -22,17 +22,7 @@ app.MapHub<ServerHub>("/hub");
 app.MapGet("/", () => "All engines running");
 
 // Start Core
-var appLifetime = app.Lifetime;
-
-var thread = new Thread(() => {
-	Core.Initialize();
-
-	while (!appLifetime.ApplicationStopping.IsCancellationRequested) {
-		Core.Tick();
-		Thread.Sleep(1);
-	}
-});
-
+var thread = new Thread(Core.Initialize);
 thread.Start();
 
 // Start app

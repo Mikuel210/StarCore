@@ -65,12 +65,6 @@ public static class Core
 			.ForEach(e => Open(e));
 	}
 	
-	public static void Tick()
-	{
-		foreach (var instance in OpenInstances)
-			instance.Loop();
-	}
-	
 	#region Instance Management
 	
 	private static void Open(Instance instance)
@@ -88,6 +82,11 @@ public static class Core
 		Task.Run(() => {
 			try { instance.Open(); }
 			catch (Exception e) { Output.Error($"An exception was thrown when opening a {moduleName}: {e}"); }
+
+			while (OpenInstances.Contains(instance)) {
+				try { instance.Loop(); }
+				catch (Exception e) { Output.Error($"An exception was thrown when looping a {moduleName}: {e}"); }
+			}
 		});
 	}
 	public static Instance Open(Type module)

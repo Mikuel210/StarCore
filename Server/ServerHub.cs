@@ -9,7 +9,14 @@ public class ServerHub : Hub
 
 	private ISingleClientProxy Proxy => Clients.Client(Context.ConnectionId);
 	private Client Client => Client.FromConnectionId(Context.ConnectionId)!;
-	
+
+	public override Task OnConnectedAsync()
+	{
+		// Request connection
+		SendCommand(new ServerConnectCommand());
+		return Task.CompletedTask;
+	}
+
 	public override Task OnDisconnectedAsync(Exception? exception)
 	{
 		// Unregister client on the server

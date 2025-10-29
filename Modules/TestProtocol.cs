@@ -7,63 +7,21 @@ namespace Modules;
 public class TestProtocol : ProtocolInstance
 {
 
-	public override void Open()
-	{
-		Root.AddChild(new TextLabel("This is an automation. I can define UI elements, perform native actions and interact with the framework"));
-
-		var label = new TextLabel();
-		Root.AddChild(label);
-		
-		for (int i = 10; i > 0; i--) {
-			label.Text = $"I will close myself in {i} seconds...";
-			Thread.Sleep(1000);
-		}
-		
-		Core.Close(this);
-	}
-
-}
-
-
-/*
-public class TestProtocol : ProtocolInstance
-{
+	private readonly TextLabel _label = new();
+	private int _seconds = 10;
 
 	public override void Open()
 	{
-		Output.Info("Hi from test protocol!");
+		Root.AddChild(new TextLabel("This is an automation. It can define UI elements, perform native actions and interact with the framework"));
+		Root.AddChild(_label);
+	}
 
+	public override void Loop()
+	{
+		_label.Text = $"I will close myself in {_seconds} seconds...";
+		Thread.Sleep(1000);
 		
-		var panel1 = new Panel();
-		panel1.AddChild(new TextLabel("1"));
-		Root.AddChild(panel1);
-
-		var panel2 = new Panel();
-		panel2.AddChild(new TextLabel("2"));
-		var label = new Checkbox("MovingLabel");
-		panel2.AddChild(label);
-		Root.AddChild(panel2);
-		
-		new Thread(() => {
-			new Thread(() => {
-				while (true) {
-					label.Text = "MovingLabel";
-					Thread.Sleep(750);
-					label.Text = "I'm moving btw";
-					Thread.Sleep(750);
-				}
-			}).Start();
-			
-			while (true) {
-				Thread.Sleep(3000);
-				label.Parent = panel1;
-				label.IsChecked = false;
-				Thread.Sleep(3000);
-				label.Parent = panel2;
-				label.IsChecked = true;
-			}
-		}).Start();
+		if (--_seconds == 0) Core.Close(this);
 	}
 
 }
-*/

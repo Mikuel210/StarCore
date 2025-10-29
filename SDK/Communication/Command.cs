@@ -100,6 +100,7 @@ public record struct CommandEnvelope(string CommandType, object?[] Payload)
 
 #region Server Commands
 
+public record ServerConnectCommand : ServerCommand;
 public record ServerNotificationCommand(string Title, string Body) : ServerCommand;
 
 #endregion
