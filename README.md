@@ -13,7 +13,7 @@ Put in other words: It's the coolest and most overkill tool to organize and auto
 StarCore is a framework for building cross-platform systems and protocols that manage different aspects of your life.
 Think of it as a personal operating system and automation engine.
 
-### ⚙ Systems
+### ⛭ Systems
 
 Systems are persistent hubs that you code to manage different aspects of your life. Systems manage data and perform 
 actions intelligently. Systems can define a UI for you to interact with, and they can connect and exchange data with 
@@ -27,7 +27,7 @@ Imagine a world where:
 
 ...and you can create intelligent systems to manage anything you can imagine
 
-### ⚙ ️Protocols
+### ⛭ ️Protocols
 
 Protocols are interactive automations that handle temporary actions. They can also define UIs, perform native actions 
 and interact with other systems and protocols.
