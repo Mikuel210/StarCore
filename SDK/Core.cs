@@ -264,7 +264,7 @@ public static class Core
 			throw new ArgumentException("Type must be a module");
 		
 		var attributeValue = GetMetadata<bool, NotifyOnOpenAttribute>(module);
-		return attributeValue as bool? ?? true;
+		return attributeValue as bool? ?? false;
 	}
 	[Pure] public static bool GetNotifyOnOpen(Instance instance) => GetNotifyOnOpen(instance.GetType());
 	[Pure] public static bool GetNotifyOnOpen<T>() => GetNotifyOnOpen(typeof(T));

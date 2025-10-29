@@ -17,6 +17,7 @@
     - [ ] Support children ordering
     - [ ] XML support
     - [ ] Better API
+- [ ] Cross-platform notifications
 - [ ] Serialization framework
 - [ ] Audio system
 - [ ] Efficient-ify and highlight instance list

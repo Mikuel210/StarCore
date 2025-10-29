@@ -1,6 +1,6 @@
 # StarCore
 
-**StarCore is an open-sourced framework for building modular, intelligent systems to manage your life.**
+**StarCore is an open-sourced framework for building systems and protocols to organize your life.**
 
 Put in other words: It's the coolest and most overkill tool to organize your life you'll ever need.
 
@@ -46,14 +46,12 @@ certain behaviors or responds to certain triggers and performs the right actions
 
 Of course, I did the sensible thing and over-engineered a cross-platform framework to solve that!
 
-Maybe this is not the most efficient way to solve the problem but it for sure is really cool and *interesting* to say
-the least.
+Maybe this is not the most efficient way to solve the problem but it for sure is really cool.
 
 ## Getting started
 
 StarCore is a work in progress and most of the features described above are not available yet. However, you can install
-a proof of concept with a working communication and instance management systems from the 
-[Releases tab](https://github.com/Mikuel210/StarCore/releases/latest).
+a proof of concept with a working communication and instance management systems from the [Releases tab](https://github.com/Mikuel210/StarCore/releases/latest).
 
 ---
 

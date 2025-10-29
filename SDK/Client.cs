@@ -35,7 +35,7 @@ public interface INotificationCapability
 
 public class BrowserClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
 
-public class DesktopClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
+public class DesktopClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy), INotificationCapability;
 
 public class MobileClient(string connectionId, IClientProxy proxy) : Client(connectionId, proxy);
 

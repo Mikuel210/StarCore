@@ -23,6 +23,19 @@ public static class Server
 		
 		Core.InstanceOpened += instance => {
 			ReplicatedStorage.Container.OpenInstances.Add(InstanceData.FromInstance(instance));
+			
+			// Show notification
+			if (Core.GetNotifyOnOpen(instance)) {
+				foreach (var client in ConnectedClients) {
+					if (client is not INotificationCapability notificationClient) continue;
+					var moduleName = Core.GetModuleName(instance);
+					
+					notificationClient.ShowNotification(
+						$"New {moduleName}",
+						$"A new {moduleName} instance has been opened"
+					);
+				}
+			}
 
 			// Listen for changes
 			instance.PropertyChanged += (_, _) => {

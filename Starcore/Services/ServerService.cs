@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
+using OsNotifications;
 using SDK;
 using SDK.Communication;
 
@@ -13,6 +12,13 @@ public static class ServerService
 
 	private static HubConnection? Connection { get; set; }
 	public static event Action? OnConnected;
+
+	static ServerService()
+	{
+		// Initialize notifications
+		Notifications.BundleIdentifier = "StarCore";
+		Notifications.SetGuiApplication(true);
+	}
 	
 	public static async Task ConnectAsync(string url)
 	{
@@ -53,6 +59,10 @@ public static class ServerService
 		
 				// Invoke event
 				OnConnected?.Invoke();
+				break;
+			
+			case ServerNotificationCommand notificationCommand:
+				Notifications.ShowNotification(notificationCommand.Title, notificationCommand.Body);
 				break;
 			
 			default:
