@@ -57,6 +57,15 @@ Maybe this is not the most efficient way to solve the problem but it for sure is
 StarCore is a work in progress and most of the features described above are not available yet. However, you can install
 a proof of concept with a working communication and instance management systems from the [Releases tab](https://github.com/Mikuel210/StarCore/releases/latest).
 
+### Note on macOS
+
+I don't have a Mac to sign or test StarCore on. macOS might block unsigned applications or terminate background processes automatically. If this happens, please follow the instructions below to build StarCore from source:
+
+1. Make sure the [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) is installed
+2. Clone the repository
+3. On the `Server` directory, run `dotnet run`
+4. While the server is running, on the `StarCore.Desktop` directory, run `dotnet run`
+
 ---
 
 Made with ❤️ for Moonshot thanks to Hack Club
